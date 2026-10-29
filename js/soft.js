@@ -1,6 +1,6 @@
 // Soft-margin tab: the fit at the chosen C with each sample's slack drawn
-// as a stick to its own margin line, the hinge loss each sample pays, and
-// the margin and support-vector count swept over C (refit on every change;
+// as a stick to its own margin line, the margin and support-vector count
+// swept over C, and the hinge loss each sample pays (refit on every change;
 // the warm-started sweep is cheap at these sizes).
 
 const soft = {
@@ -46,8 +46,8 @@ function softRender() {
   let s = axesSvg();
   s += `<polygon class="half pos" points="${halfPlane(w, b, 1)}"/>
     <polygon class="half neg" points="${halfPlane(w, b, -1)}"/>`;
-  s += lineSvg(w, b + 1, 'class="edge soft"');
-  s += lineSvg(w, b - 1, 'class="edge soft"');
+  s += lineSvg(w, b + 1, 'class="edge"');
+  s += lineSvg(w, b - 1, 'class="edge"');
   s += lineSvg(w, b, 'class="bound"');
 
   // 1/‖w‖ bracket from the boundary to the +1 margin line, near the data.
@@ -78,8 +78,8 @@ function softRender() {
   }
   sSvg.innerHTML = s + top;
   softReadout();
-  softHinge();
   softSweepChart();
+  softHinge();
 }
 
 function softReadout() {

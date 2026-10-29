@@ -82,17 +82,8 @@
         <i>y<sub>i</sub></i>(<b>w</b>&middot;<b>x</b><sub><i>i</i></sub>
         &minus; <i>b</i>) &ge; 1 &minus; <i>ξ<sub>i</sub></i>
       </div>
-      <p class="goal approach"><b>Hinge view:</b> at the best <b>w</b>,
-        <i>b</i>, each slack is as small as its constraint allows,</p>
-      <div class="formula">
-        <i>ξ<sub>i</sub></i> = max(0, 1 &minus;
-        <i>y<sub>i</sub></i>(<b>w</b>&middot;<b>x</b><sub><i>i</i></sub>
-        &minus; <i>b</i>))
-      </div>
-      <p class="muted">so the SVM is hinge loss plus a ‖<b>w</b>‖² penalty:
-        the &ldquo;loss + penalty&rdquo; shape of ridge (lesson 13), with
-        <i>C</i> playing 1/<i>λ</i>. A stick runs from each sample with
-        slack to its own class's margin line; its length is
+      <p class="muted">A stick runs from each sample with slack to its own
+        class's margin line; its length is
         <i>ξ<sub>i</sub></i>/‖<b>w</b>‖.</p>
     </div>
 
@@ -125,11 +116,8 @@
         </li>
       </ul>
       <ul class="try" data-show="hard">
-        <li>Drag the square handles (or empty space, to slide the line) to
-          make your margin as large as you can. Then check <em>Show widest
-          line</em>.</li>
         <li>Drag a sample that is not a support vector, staying off the
-          violet street. Does the widest line move?
+          street. Does the line move?
           <details class="answer"><summary>Answer</summary>No. Its
             constraint is inactive, so its <i>α</i> = 0 and it is not in
             <b>w</b> = &sum; <i>α<sub>i</sub>y<sub>i</sub></i><b>x</b><sub><i>i</i></sub>.
@@ -152,21 +140,13 @@
       </ul>
       <ul class="try" data-show="soft">
         <li>Slide <i>C</i> from 0.01 to 1000. What happens to the margin
-          and the number of support vectors? Compare the chart under the
-          hinge.
+          and the number of support vectors? Compare the sweep over
+          <i>C</i>.
           <details class="answer"><summary>Answer</summary>Small
             <i>C</i>: slack is cheap, so a wide street with many samples
             inside it (all support vectors). Large <i>C</i>: slack is
             expensive, so the street narrows to push samples out, and fewer
             support vectors remain.</details>
-        </li>
-        <li>On the hinge chart, which samples are support vectors?
-          <details class="answer"><summary>Answer</summary>Every sample with
-            <i>y</i>(<b>w</b>&middot;<b>x</b> &minus; <i>b</i>) &le; 1: at
-            the hinge's corner (on the margin, 0 &lt; <i>α</i> &lt;
-            <i>C</i>) or on its slope (slack &gt; 0, <i>α</i> = <i>C</i>,
-            dashed rings). Samples on the flat part have <i>α</i> =
-            0.</details>
         </li>
         <li>Set <em>Separation</em> to 4 and <i>C</i> to 1000. Is there
           any slack left?
@@ -290,26 +270,21 @@
   <main class="panel" data-show="hard">
     <div class="stage card">
       <div class="stage-head">
-        <span class="key"><i class="ln ink"></i> your line</span>
-        <span class="key"><i class="ln green"></i> distance to the nearest
-          sample</span>
-        <span class="key"><i class="ln violet"></i> widest line</span>
-        <span class="key"><i class="dot sv"></i> support vector</span>
+        <span class="key"><i class="ln ink"></i> widest line</span>
+        <span class="key"><i class="ln dash"></i> margin lines
+          <b>w</b>&middot;<b>x</b> &minus; <i>b</i> = &plusmn;1</span>
+        <span class="key"><i class="ln green"></i> margin</span>
+        <span class="key"><i class="dot ringk"></i> support vector</span>
       </div>
-      <svg id="h-stage" aria-label="samples, your line and its
+      <svg id="h-stage" aria-label="samples, the widest line and its
         street"></svg>
-      <p class="hint">Drag a square handle to turn your line, or empty
-        space to slide it. Drag a sample to move it; click it to flip its
+      <p class="hint">Drag a sample to move it; click it to flip its
         class.</p>
     </div>
 
     <div class="side">
       <div class="card controls">
-        <label class="check"><input type="checkbox" id="h-best"> Show
-          widest line</label>
         <div class="buttons">
-          <button id="h-snap" title="Put your line on the widest
-            one">Copy widest line</button>
           <button id="h-resample" title="Draw new samples">&#8635;
             Resample</button>
           <button id="h-reset" title="Undo drags and flips">Reset
@@ -320,7 +295,7 @@
           <span id="h-nval" class="val"></span></label>
       </div>
       <div class="card readout" id="h-read"></div>
-      <div class="card" id="h-sum-card" hidden>
+      <div class="card" id="h-sum-card">
         <h3><b>w</b> = &sum; <i>α<sub>i</sub>y<sub>i</sub></i><b>x</b><sub><i>i</i></sub>,
           head to tail</h3>
         <svg id="h-sum" viewBox="0 0 340 260" aria-label="the support
@@ -370,21 +345,18 @@
         </div>
       </div>
       <div class="card readout" id="s-read"></div>
-      <div class="card readout" id="s-hover"></div>
-    </div>
-
-    <div class="below">
-      <div class="card">
-        <h3>Hinge loss: each sample's slack</h3>
-        <svg id="s-hinge" class="chart" viewBox="0 0 520 224"
-          aria-label="slack against y(w·x − b)"></svg>
-      </div>
       <div class="card">
         <h3>Sweep over <i>C</i></h3>
         <svg id="s-sweep" class="chart pick" viewBox="0 0 520 224"
           aria-label="margin and support vectors against C"></svg>
         <p class="muted">Click or drag the chart to set <i>C</i>.</p>
       </div>
+      <div class="card">
+        <h3>Hinge loss: each sample's slack</h3>
+        <svg id="s-hinge" class="chart" viewBox="0 0 520 224"
+          aria-label="slack against y(w·x − b)"></svg>
+      </div>
+      <div class="card readout" id="s-hover"></div>
     </div>
   </main>
 

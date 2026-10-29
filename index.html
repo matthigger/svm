@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SVMs, visually</title>
+  <meta name="description" content="The margin of a sample, built step by
+    step from the geometry of w; the widest separating line and its
+    support vectors; and the soft margin's slack, priced by C.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M2 30 L30 2' stroke='%2315803d' stroke-width='9' stroke-opacity='.25'/%3E%3Cpath d='M2 30 L30 2' stroke='%231c2230' stroke-width='2.5'/%3E%3Ccircle cx='9' cy='9' r='4' fill='%232563eb'/%3E%3Ccircle cx='23' cy='23' r='4' fill='%23ea580c'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>SVMs, visually</h1>
+    <p class="sub">Of all the lines that separate two classes, take the one
+      farthest from every sample.</p>
+    <nav class="tabs" role="tablist">
+      <button class="tab" role="tab" data-mode="geometry">Margin
+        geometry</button>
+      <button class="tab" role="tab" data-mode="hard">Hard margin</button>
+      <button class="tab" role="tab" data-mode="soft">Soft margin</button>
+    </nav>
+  </header>
+
+  <section class="intro card">
+    <div data-show="geometry">
+      <h2>How far is a sample from the line?</h2>
+      <p class="goal"><b>Goal:</b> the SVM picks the line farthest from
+        every sample, so first we need the distance, or <b>margin</b>, from
+        a point <b>x</b> to the line <b>w</b>&middot;<b>x</b> =
+        <i>b</i>.</p>
+      <p class="goal approach"><b>Approach:</b> six steps, from the line
+        through the origin to any point (the panel beside the plot). Each
+        step leans on the one before.</p>
+      <div class="formula">
+        margin(<b>x</b>) = <span class="frac"><span><b>w</b>&middot;<b>x</b>
+        &minus; <i>b</i></span><span>‖<b>w</b>‖</span></span>
+        <span class="implies">&rArr;</span>
+        with ‖<b>w</b>‖ = 1: &nbsp;<b>x</b>&middot;<b>w</b> &minus; <i>b</i>
+      </div>
+      <p class="muted">Labels are now <i>y</i> &isin; {&minus;1, +1} and
+        <i>&ycirc;</i> = sign(<b>w</b>&middot;<b>x</b> &minus; <i>b</i>). A
+        sample is on its own class's side exactly when
+        <i>y</i>(<b>w</b>&middot;<b>x</b> &minus; <i>b</i>) &gt; 0.</p>
+    </div>
+
+    <div data-show="hard">
+      <h2>Hard margin: the widest street</h2>
+      <p class="goal"><b>Goal:</b> many lines separate the classes. Pick
+        the one whose nearest sample is farthest away.</p>
+      <p class="goal approach"><b>Approach:</b> rescale <b>w</b> and
+        <i>b</i> so the nearest sample has <i>y</i>(<b>w</b>&middot;<b>x</b>
+        &minus; <i>b</i>) = 1. The margin is then 1/‖<b>w</b>‖, so the
+        widest street has the shortest <b>w</b> (Boser, Guyon &amp; Vapnik
+        1992):</p>
+      <div class="formula">
+        min <span class="frac"><span>1</span><span>2</span></span>
+        ‖<b>w</b>‖<sup>2</sup> &nbsp;subject to&nbsp;
+        <i>y<sub>i</sub></i>(<b>w</b>&middot;<b>x</b><sub><i>i</i></sub>
+        &minus; <i>b</i>) &ge; 1 for every <i>i</i>
+      </div>
+      <p class="muted">With Lagrange multipliers (lesson 15): <b>w</b> =
+        &sum; <i>α<sub>i</sub>y<sub>i</sub></i><b>x</b><sub><i>i</i></sub>
+        and &sum; <i>α<sub>i</sub>y<sub>i</sub></i> = 0, with
+        <i>α<sub>i</sub></i> &ge; 0, and <i>α<sub>i</sub></i> = 0 unless the
+        constraint is active, <i>y<sub>i</sub></i>(<b>w</b>&middot;<b>x</b><sub><i>i</i></sub>
+        &minus; <i>b</i>) = 1. The samples with active constraints sit on the
+        street's edge: the <b>support vectors</b>.</p>
+    </div>
+
+    <div data-show="soft">
+      <h2>Soft margin: pay for slack</h2>
+      <p class="goal"><b>Goal:</b> when the classes overlap, no line meets
+        every constraint. Let sample <i>i</i> fall short by its
+        <b>slack</b> <i>ξ<sub>i</sub></i> &ge; 0, at a price of <i>C</i> per
+        unit (Cortes &amp; Vapnik 1995).</p>
+      <div class="formula">
+        min <span class="frac"><span>1</span><span>2</span></span>
+        ‖<b>w</b>‖<sup>2</sup> + <i>C</i> &sum; <i>ξ<sub>i</sub></i>
+        &nbsp;subject to&nbsp;
+        <i>y<sub>i</sub></i>(<b>w</b>&middot;<b>x</b><sub><i>i</i></sub>
+        &minus; <i>b</i>) &ge; 1 &minus; <i>ξ<sub>i</sub></i>
+      </div>
+      <p class="goal approach"><b>Hinge view:</b> at the best <b>w</b>,
+        <i>b</i>, each slack is as small as its constraint allows,</p>
+      <div class="formula">
+        <i>ξ<sub>i</sub></i> = max(0, 1 &minus;
+        <i>y<sub>i</sub></i>(<b>w</b>&middot;<b>x</b><sub><i>i</i></sub>
+        &minus; <i>b</i>))
+      </div>
+      <p class="muted">so the SVM is hinge loss plus a ‖<b>w</b>‖² penalty:
+        the &ldquo;loss + penalty&rdquo; shape of ridge (lesson 13), with
+        <i>C</i> playing 1/<i>λ</i>. A stick runs from each sample with
+        slack to its own class's margin line; its length is
+        <i>ξ<sub>i</sub></i>/‖<b>w</b>‖.</p>
+    </div>
+
+    <div>
+      <h3>Try this</h3>
+      <ul class="try" data-show="geometry">
+        <li>In step 1, drag the tip of <b>w</b> to make it twice as long.
+          Does the line change?
+          <details class="answer"><summary>Answer</summary>No. Only the
+            direction of <b>w</b> sets the line <b>w</b>&middot;<b>x</b> =
+            0: <b>w</b> and 2<b>w</b> give the same points. Step 3 makes
+            this the reason we may assume ‖<b>w</b>‖ = 1.</details>
+        </li>
+        <li>In step 2, point <b>w</b> straight up, at [0, 1]. Which line
+          is it?
+          <details class="answer"><summary>Answer</summary><i>x</i>₁ = 0,
+            the horizontal axis: slope &minus;0/1 = 0. Every vector along
+            it is [<i>t</i>, 0], and [0, 1]&middot;[<i>t</i>, 0] =
+            0.</details>
+        </li>
+        <li>In step 6, drag <b>x</b> parallel to the line, then across
+          it. When does the margin change, and when is it negative?
+          <details class="answer"><summary>Answer</summary>Moving
+            parallel to the line leaves <b>x</b>&middot;<b>w</b> (and the
+            margin) alone; only motion along <b>w</b> changes it. It is 0
+            on the line and negative on the side <b>w</b> points away
+            from.</details>
+        </li>
+      </ul>
+      <ul class="try" data-show="hard">
+        <li>Drag the square handles (or empty space, to slide the line) to
+          make your margin as large as you can. Then check <em>Show widest
+          line</em>.</li>
+        <li>Drag a sample that is not a support vector, staying off the
+          violet street. Does the widest line move?
+          <details class="answer"><summary>Answer</summary>No. Its
+            constraint is inactive, so its <i>α</i> = 0 and it is not in
+            <b>w</b> = &sum; <i>α<sub>i</sub>y<sub>i</sub></i><b>x</b><sub><i>i</i></sub>.
+            Only the samples on the street's edge shape the line.</details>
+        </li>
+        <li>Drag a support vector toward the other class.
+          <details class="answer"><summary>Answer</summary>The street
+            narrows: ‖<b>w</b>‖ grows, so 1/‖<b>w</b>‖ shrinks, and the
+            <i>α</i>s grow. Past the other class's samples there is no
+            separating line at all.</details>
+        </li>
+        <li>In the <b>w</b> = &sum; <i>α<sub>i</sub>y<sub>i</sub></i><b>x</b><sub><i>i</i></sub>
+          card, why are there support vectors from both classes?
+          <details class="answer"><summary>Answer</summary>&sum;
+            <i>α<sub>i</sub>y<sub>i</sub></i> = 0 with every
+            <i>α<sub>i</sub></i> &gt; 0 needs some <i>y<sub>i</sub></i> =
+            +1 and some &minus;1. Geometrically: the street has an edge on
+            each side.</details>
+        </li>
+      </ul>
+      <ul class="try" data-show="soft">
+        <li>Slide <i>C</i> from 0.01 to 1000. What happens to the margin
+          and the number of support vectors? Compare the chart under the
+          hinge.
+          <details class="answer"><summary>Answer</summary>Small
+            <i>C</i>: slack is cheap, so a wide street with many samples
+            inside it (all support vectors). Large <i>C</i>: slack is
+            expensive, so the street narrows to push samples out, and fewer
+            support vectors remain.</details>
+        </li>
+        <li>On the hinge chart, which samples are support vectors?
+          <details class="answer"><summary>Answer</summary>Every sample with
+            <i>y</i>(<b>w</b>&middot;<b>x</b> &minus; <i>b</i>) &le; 1: at
+            the hinge's corner (on the margin, 0 &lt; <i>α</i> &lt;
+            <i>C</i>) or on its slope (slack &gt; 0, <i>α</i> = <i>C</i>,
+            dashed rings). Samples on the flat part have <i>α</i> =
+            0.</details>
+        </li>
+        <li>Set <em>Separation</em> to 4 and <i>C</i> to 1000. Is there
+          any slack left?
+          <details class="answer"><summary>Answer</summary>No: the classes
+            separate, every <i>ξ<sub>i</sub></i> = 0, and the fit is the
+            hard margin. A large <i>C</i> approaches the hard margin; with
+            overlap the hard margin does not exist.</details>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <main class="panel" data-show="geometry">
+    <div class="stage card">
+      <div class="stage-head">
+        <span class="key"><i class="ln w"></i> <b>w</b> (drag its
+          tip)</span>
+        <span class="key"><i class="ln ink"></i> line</span>
+        <span class="key" data-step="4 5 6"><i class="dot mk"></i>
+          <i>b</i><b>w</b></span>
+        <span class="key" data-step="5 6"><i class="ln green"></i>
+          margin</span>
+      </div>
+      <svg id="g-stage" aria-label="the line w·x = b and the vector
+        w"></svg>
+      <p class="hint" id="g-hint">Drag the white points and the tip of
+        <b>w</b>. From step 3 on, drag the line itself to change
+        <i>b</i>.</p>
+    </div>
+
+    <div class="side">
+      <div class="card">
+        <div class="steps">
+          <button id="g-prev" title="Previous step">&larr;</button>
+          <div class="seg" id="g-steps" role="radiogroup"></div>
+          <button id="g-next" title="Next step">&rarr;</button>
+        </div>
+
+        <div class="step" data-step="1">
+          <h2>1. The line <b>w</b>&middot;<b>x</b> = 0</h2>
+          <p>In 2-d, <b>w</b>&middot;<b>x</b> = <i>w</i>₀<i>x</i>₀ +
+            <i>w</i>₁<i>x</i>₁ = 0 solves to</p>
+          <div class="formula"><i>x</i>₁ = &minus;<span
+            class="frac"><span><i>w</i>₀</span><span><i>w</i>₁</span></span>
+            <i>x</i>₀</div>
+          <p>a line through the origin with slope &minus;<i>w</i>₀ /
+            <i>w</i>₁ (the green triangle).</p>
+        </div>
+        <div class="step" data-step="2">
+          <h2>2. <b>w</b> is orthogonal to the line</h2>
+          <p>Take any two points <b>x</b><sub>A</sub>, <b>x</b><sub>B</sub>
+            on the line. Both satisfy <b>w</b>&middot;<b>x</b> = 0, so</p>
+          <div class="formula"><b>w</b>&middot;(<b>x</b><sub>A</sub>
+            &minus; <b>x</b><sub>B</sub>) = 0 &minus; 0 = 0</div>
+          <p><b>w</b> is orthogonal to every vector along the line. This is
+            lesson 15's &ldquo;&nabla;<i>g</i> is orthogonal to its level
+            set&rdquo;, with <i>g</i>(<b>x</b>) = <b>w</b>&middot;<b>x</b>
+            and &nabla;<i>g</i> = <b>w</b>.</p>
+        </div>
+        <div class="step" data-step="3">
+          <h2>3. Assume ‖<b>w</b>‖ = 1</h2>
+          <p>Let the line be <b>w</b>&middot;<b>x</b> = <i>b</i> (drag it to
+            change <i>b</i>). For any <i>k</i> &gt; 0,
+            (<i>k</i><b>w</b>)&middot;<b>x</b> = <i>kb</i> holds at exactly
+            the same points. Slide ‖<b>w</b>‖: the arrow changes, the line
+            does not. So we may as well take ‖<b>w</b>‖ = 1, the dashed unit
+            circle.</p>
+          <label class="slider"><span>‖<b>w</b>‖</span>
+            <input type="range" id="g-norm" min="-0.6" max="0.48"
+              step="0.005">
+            <span id="g-normval" class="val"></span></label>
+          <div class="buttons"><button id="g-one">Divide <b>w</b>, <i>b</i>
+            by ‖<b>w</b>‖</button></div>
+        </div>
+        <div class="step" data-step="4">
+          <h2>4. The point <i>b</i><b>w</b> is on the line</h2>
+          <p>With ‖<b>w</b>‖ = 1,</p>
+          <div class="formula"><b>w</b>&middot;(<i>b</i><b>w</b>) =
+            <i>b</i>‖<b>w</b>‖<sup>2</sup> = <i>b</i></div>
+          <p>so <i>b</i><b>w</b> is on the line, where the <b>w</b> axis
+            meets it at a right angle (step 2). It is the line's closest
+            point to the origin, at distance <i>b</i>.</p>
+        </div>
+        <div class="step" data-step="5">
+          <h2>5. The margin of a point on the <b>w</b> axis</h2>
+          <p>The point <b>x</b> = <i>α</i><b>w</b> lies on the <b>w</b>
+            axis, which crosses the line at <i>b</i><b>w</b> at a right
+            angle. So its distance to the line is</p>
+          <div class="formula">‖<i>α</i><b>w</b> &minus; <i>b</i><b>w</b>‖
+            = |<i>α</i> &minus; <i>b</i>| ‖<b>w</b>‖ = |<i>α</i> &minus;
+            <i>b</i>|</div>
+          <p>Keep the sign: the margin <i>α</i> &minus; <i>b</i> is positive
+            on the side <b>w</b> points to. Drag <i>α</i><b>w</b>.</p>
+        </div>
+        <div class="step" data-step="6">
+          <h2>6. The margin of any point</h2>
+          <p>Project <b>x</b> onto the <b>w</b> axis: the foot is
+            <i>c</i><b>w</b> with</p>
+          <div class="formula"><i>c</i> = <span
+            class="frac"><span><b>x</b>&middot;<b>w</b></span><span><b>w</b>&middot;<b>w</b></span></span>
+            = <b>x</b>&middot;<b>w</b>
+            <span class="implies">&rArr;</span>
+            margin = <b>x</b>&middot;<b>w</b> &minus; <i>b</i></div>
+          <p>Sliding <b>x</b> parallel to the line keeps its distance, so
+            <b>x</b> and <i>c</i><b>w</b> have the same margin: step 5 with
+            <i>α</i> = <i>c</i>. The two green segments match. For any
+            length of <b>w</b>, the margin is (<b>w</b>&middot;<b>x</b>
+            &minus; <i>b</i>) / ‖<b>w</b>‖.</p>
+        </div>
+        <label class="check" data-step="4 5 6"><input type="checkbox"
+          id="g-free"><span>Let ‖<b>w</b>‖ vary</span></label>
+      </div>
+      <div class="card readout" id="g-read"></div>
+    </div>
+  </main>
+
+  <main class="panel" data-show="hard">
+    <div class="stage card">
+      <div class="stage-head">
+        <span class="key"><i class="ln ink"></i> your line</span>
+        <span class="key"><i class="ln green"></i> distance to the nearest
+          sample</span>
+        <span class="key"><i class="ln violet"></i> widest line</span>
+        <span class="key"><i class="dot sv"></i> support vector</span>
+      </div>
+      <svg id="h-stage" aria-label="samples, your line and its
+        street"></svg>
+      <p class="hint">Drag a square handle to turn your line, or empty
+        space to slide it. Drag a sample to move it; click it to flip its
+        class.</p>
+    </div>
+
+    <div class="side">
+      <div class="card controls">
+        <label class="check"><input type="checkbox" id="h-best"> Show
+          widest line</label>
+        <div class="buttons">
+          <button id="h-snap" title="Put your line on the widest
+            one">Copy widest line</button>
+          <button id="h-resample" title="Draw new samples">&#8635;
+            Resample</button>
+          <button id="h-reset" title="Undo drags and flips">Reset
+            data</button>
+        </div>
+        <label class="slider"><span>Samples</span>
+          <input type="range" id="h-n" step="1">
+          <span id="h-nval" class="val"></span></label>
+      </div>
+      <div class="card readout" id="h-read"></div>
+      <div class="card" id="h-sum-card" hidden>
+        <h3><b>w</b> = &sum; <i>α<sub>i</sub>y<sub>i</sub></i><b>x</b><sub><i>i</i></sub>,
+          head to tail</h3>
+        <svg id="h-sum" viewBox="0 0 340 260" aria-label="the support
+          vectors' terms adding up to w"></svg>
+        <div class="readout" id="h-alpha"></div>
+        <p class="muted">Each arrow is one support vector's term
+          <i>α<sub>i</sub>y<sub>i</sub></i><b>x</b><sub><i>i</i></sub>
+          (numbers match the plot); they add up to the violet <b>w</b>.
+          Every other sample has <i>α<sub>i</sub></i> = 0.</p>
+      </div>
+    </div>
+  </main>
+
+  <main class="panel" data-show="soft">
+    <div class="stage card">
+      <div class="stage-head">
+        <span class="key"><i class="ln ink"></i> boundary</span>
+        <span class="key"><i class="ln dash"></i> margin lines
+          <b>w</b>&middot;<b>x</b> &minus; <i>b</i> = &plusmn;1</span>
+        <span class="key"><i class="ln c1"></i> slack, inside</span>
+        <span class="key"><i class="ln c2"></i> slack, wrong side</span>
+        <span class="key"><i class="dot ringk"></i> support vector</span>
+      </div>
+      <svg id="s-stage" aria-label="the soft-margin fit and each sample's
+        slack"></svg>
+      <p class="hint">Drag a sample to move it; click it to flip its
+        class. Dashed rings: <i>α</i> = <i>C</i> (samples with
+        slack).</p>
+    </div>
+
+    <div class="side">
+      <div class="card controls">
+        <label class="slider"><span class="big"><i>C</i></span>
+          <input type="range" id="s-c">
+          <span id="s-cval" class="val"></span></label>
+        <label class="slider"><span>Separation</span>
+          <input type="range" id="s-sep">
+          <span id="s-sepval" class="val"></span></label>
+        <label class="slider"><span>Samples</span>
+          <input type="range" id="s-n" step="1">
+          <span id="s-nval" class="val"></span></label>
+        <div class="buttons">
+          <button id="s-resample" title="Draw new samples">&#8635;
+            Resample</button>
+          <button id="s-reset" title="Undo drags and flips">Reset
+            data</button>
+        </div>
+      </div>
+      <div class="card readout" id="s-read"></div>
+      <div class="card readout" id="s-hover"></div>
+    </div>
+
+    <div class="below">
+      <div class="card">
+        <h3>Hinge loss: each sample's slack</h3>
+        <svg id="s-hinge" class="chart" viewBox="0 0 520 224"
+          aria-label="slack against y(w·x − b)"></svg>
+      </div>
+      <div class="card">
+        <h3>Sweep over <i>C</i></h3>
+        <svg id="s-sweep" class="chart pick" viewBox="0 0 520 224"
+          aria-label="margin and support vectors against C"></svg>
+        <p class="muted">Click or drag the chart to set <i>C</i>.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    Part of the DS 4400 &ldquo;visually&rdquo; demos.
+    &middot;
+    <a href="https://github.com/matthigger/svm">Source on GitHub</a>
+    &middot;
+    <span id="build"></span>
+  </footer>
+
+  <script src="js/version.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/svm.js"></script>
+  <script src="js/geometry.js"></script>
+  <script src="js/hard.js"></script>
+  <script src="js/soft.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

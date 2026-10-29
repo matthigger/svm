@@ -105,7 +105,7 @@ dragOn(hSvg, {
   move(p) {
     const g = hard.drag;
     g.moved = true;
-    hard.X[g.i] = [clamp(p[0], -2.95, 2.95), clamp(p[1], -2.95, 2.95)];
+    hard.X[g.i] = clampPlane(p, 0.05);
     hardSolve();
     hardRender();
   },

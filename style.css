@@ -331,6 +331,7 @@ main { padding-top: 14px; padding-bottom: 24px; }
 .arrow line { stroke-width: 3; }
 .arrow.w line { stroke: var(--violet); }
 .arrow.w polygon { fill: var(--violet); }
+.arrow.ghost { opacity: .4; }
 .arrow.green line { stroke: var(--green); }
 .arrow.green polygon { fill: var(--green); }
 .arrow.unitw line { stroke: #a3abb9; }

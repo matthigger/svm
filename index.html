@@ -101,10 +101,10 @@
         </li>
         <li>In step 2, point <b>w</b> straight up, at [0, 1]. Which line
           is it?
-          <details class="answer"><summary>Answer</summary><i>x</i>₁ = 0,
-            the horizontal axis: slope &minus;0/1 = 0. Every vector along
-            it is [<i>t</i>, 0], and [0, 1]&middot;[<i>t</i>, 0] =
-            0.</details>
+          <details class="answer"><summary>Answer</summary>The
+            horizontal line <i>x</i>₁ = <i>b</i>: slope &minus;0/1 = 0.
+            Every vector along it is [<i>t</i>, 0], and
+            [<i>t</i>, 0]&middot;[0, 1] = 0.</details>
         </li>
         <li>In step 6, drag <b>x</b> parallel to the line, then across
           it. When does the margin change, and when is it negative?
@@ -173,8 +173,7 @@
       <svg id="g-stage" aria-label="the line w·x = b and the vector
         w"></svg>
       <p class="hint" id="g-hint">Drag the white points and the tip of
-        <b>w</b>. Except in step 2, drag the line itself to change
-        <i>b</i>.</p>
+        <b>w</b>. Drag the line itself to change <i>b</i>.</p>
     </div>
 
     <div class="side">
@@ -200,27 +199,32 @@
         </div>
         <div class="step" data-step="2">
           <h2>2. <b>w</b> is orthogonal to the line</h2>
-          <p>Set <i>b</i> = 0 for now. Take any two points
-            <b>x</b><sub>A</sub>, <b>x</b><sub>B</sub> on the line. Both
-            satisfy <b>w</b>&middot;<b>x</b> = 0, so</p>
-          <div class="formula"><b>w</b>&middot;(<b>x</b><sub>A</sub>
-            &minus; <b>x</b><sub>B</sub>) = 0 &minus; 0 = 0</div>
-          <p><b>w</b> is orthogonal to every vector along the line. This is
-            lesson 15's &ldquo;&nabla;<i>g</i> is orthogonal to its level
-            set&rdquo;, with <i>g</i>(<b>x</b>) = <b>w</b>&middot;<b>x</b>
-            and &nabla;<i>g</i> = <b>w</b>.</p>
+          <p>Take any two points <b>x</b><sub>A</sub>,
+            <b>x</b><sub>B</sub> on the line. Both satisfy
+            <b>x</b>&middot;<b>w</b> = <i>b</i>, so</p>
+          <div class="formula">(<b>x</b><sub>A</sub> &minus;
+            <b>x</b><sub>B</sub>)&middot;<b>w</b> = <i>b</i> &minus;
+            <i>b</i> = 0</div>
+          <p><b>w</b> is orthogonal to every vector along the line (the faint
+            copy of <b>w</b>). This is lesson 15's &ldquo;&nabla;<i>g</i> is
+            orthogonal to its level set&rdquo;, with <i>g</i>(<b>x</b>) =
+            <b>x</b>&middot;<b>w</b> and &nabla;<i>g</i> = <b>w</b>.</p>
         </div>
         <div class="step" data-step="3">
           <h2>3. Assume ‖<b>w</b>‖ = 1</h2>
-          <p>For any <i>k</i> &gt; 0, <b>x</b>&middot;(<i>k</i><b>w</b>) =
-            <i>kb</i> holds at exactly the same points as
-            <b>x</b>&middot;<b>w</b> = <i>b</i>. Slide ‖<b>w</b>‖: the arrow changes, the line
-            does not. So we may as well take ‖<b>w</b>‖ = 1, the dashed unit
-            circle.</p>
+          <p>Without loss of generality, let's scale <b>w</b> so that
+            ‖<b>w</b>‖ = 1 (the dashed unit circle). <i>b</i> has to scale
+            with it so the equation still describes the same line: for any
+            <i>k</i> &gt; 0, <b>x</b>&middot;(<i>k</i><b>w</b>) = <i>kb</i>
+            holds at exactly the same points as <b>x</b>&middot;<b>w</b> =
+            <i>b</i>. Slide ‖<b>w</b>‖: <b>w</b> and <i>b</i> change, the
+            line does not.</p>
           <label class="slider"><span>‖<b>w</b>‖</span>
             <input type="range" id="g-norm" min="-0.6" max="0.48"
               step="0.005">
             <span id="g-normval" class="val"></span></label>
+          <div class="slider"><span><i>b</i></span>
+            <span id="g-bval" class="val"></span></div>
           <div class="buttons"><button id="g-one">Divide <b>w</b>, <i>b</i>
             by ‖<b>w</b>‖</button></div>
         </div>

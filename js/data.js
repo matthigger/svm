@@ -29,8 +29,7 @@ function makeBlobs(nPer, sep, sd, seed) {
   for (const c of [-1, 1]) {
     for (let i = 0; i < nPer; i++) {
       const s = c * sep / 2 + sd * gauss(r), t = 1.6 * sd * gauss(r);
-      X.push([clamp(s * u[0] + t * v[0], -2.9, 2.9),
-        clamp(s * u[1] + t * v[1], -2.9, 2.9)]);
+      X.push(clampPlane(add(mul(u, s), mul(v, t)), 0.1));
       y.push(c);
     }
   }

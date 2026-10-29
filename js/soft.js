@@ -230,7 +230,7 @@ dragOn(sSvg, {
   move(p) {
     const g = soft.drag;
     g.moved = true;
-    soft.X[g.i] = [clamp(p[0], -2.95, 2.95), clamp(p[1], -2.95, 2.95)];
+    soft.X[g.i] = clampPlane(p, 0.05);
     soft.hover = g.i;
     softSolve();
     softSweep();

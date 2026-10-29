@@ -1,15 +1,26 @@
-// Margin geometry tab: six steps from the line w·x = 0 to the margin of
-// any point, (w·x - b) / ‖w‖, following the lesson 16 panels. Step 2
-// draws the line through the origin (b = 0); from step 4 on, w has unit
-// length unless "let ‖w‖ vary" is checked.
+// Margin geometry tab: six steps from the line x·w = b to the margin of
+// any point, (w·x - b) / ‖w‖, following the lesson 16 panels. From step 4
+// on, w has unit length unless "let ‖w‖ vary" is checked.
 
 const geo = {
-  step: 1, w: [1.2, 1.6], b: 3, ta: 1.5, tb: -1.3, alpha: 2.6,
+  step: 1, w: [1.2, 1.6], b: 3, ta: -0.4, tb: -2.6, alpha: 2.6,
   x: [2.2, 1.8], free: false, drag: null,
 };
 const gSvg = planeSvg("g-stage");
 
-function gB() { return geo.step === 2 ? 0 : geo.b; }
+/**
+ * Point t along the line x·w = b from its foot bw / ‖w‖², kept on the
+ * visible part of the line.
+ */
+function gOnLine(t) {
+  const F = footOrigin(geo.w, geo.b), d = perp(mul(geo.w, 1 / norm(geo.w)));
+  const seg = clipLine(F, d);
+  if (seg) {
+    const [t0, t1] = seg.map(e => dot(sub(e, F), d)).sort((a, c) => a - c);
+    t = clamp(t, t0 + 0.2, t1 - 0.2);
+  }
+  return add(F, mul(d, t));
+}
 function gUnit() { return geo.step >= 4 && !geo.free; }
 
 /** Rescale w and b together (the line stays) so that ‖w‖ = r. */
@@ -34,7 +45,7 @@ function subT(sym, s) {
 const W_T = '<tspan class="vec">w</tspan>';
 
 function geoRender() {
-  const st = geo.step, w = geo.w, b = gB(), n = norm(w), u = mul(w, 1 / n);
+  const st = geo.step, w = geo.w, b = geo.b, n = norm(w), u = mul(w, 1 / n);
   const d = perp(u), F = footOrigin(w, b);
   let s = axesSvg(), top = "";
 
@@ -52,13 +63,17 @@ function geoRender() {
   }
 
   s += lineSvg(w, b, 'class="bound"');
-  if (st !== 2) s += lineSvg(w, b, 'class="hit" data-h="line"');
+  s += lineSvg(w, b, 'class="hit" data-h="line"');
   const lineEnd = clipLine(F, d);
   if (lineEnd) {
-    const e = lineEnd[1], right = e[0] > 2.5;
-    top += gLabel(e, `<tspan class="vec">x</tspan>·${W_T} = ${
-      st === 2 ? "0" : "<tspan class='sym'>b</tspan>"}`, "ink",
-      right ? -10 : 8, e[1] > 2.5 ? 22 : -8, right ? "end" : "start");
+    const e = lineEnd[1], edge = PLANE.dom[1] - 0.5, right = e[0] > edge;
+    const X_T = '<tspan class="sym">x</tspan>';
+    const eq = st === 3
+      ? `${fmt(w[0])}${X_T}₀ ${w[1] < 0 ? "−" : "+"} ${fmt(Math.abs(w[1]))}${
+        X_T}₁ = ${fmt(b)}`
+      : `<tspan class="vec">x</tspan>·${W_T} = <tspan class="sym">b</tspan>`;
+    top += gLabel(e, eq, "ink",
+      right ? -10 : 8, e[1] > edge ? 22 : -8, right ? "end" : "start");
   }
 
   if (st === 1 && Math.abs(w[1]) > 1e-6) {
@@ -71,8 +86,9 @@ function geoRender() {
     top += gLabel(add(Cn, [0, m * r / 2]), fmt(m * r), "green", 8, 5);
   }
   if (st === 2) {
-    const A = mul(d, geo.ta), B = mul(d, geo.tb);
-    s += rightAngleSvg([0, 0], u, d);
+    const A = gOnLine(geo.ta), B = gOnLine(geo.tb), M = mul(add(A, B), .5);
+    s += arrowSvg(M, add(M, w), "w ghost");
+    s += rightAngleSvg(M, u, d);
     s += arrowSvg(B, A, "green");
     top += `<circle class="pt" data-h="xa" cx="${S.sx(A[0])}"
       cy="${S.sy(A[1])}" r="8"/><circle class="pt" data-h="xb"
@@ -129,7 +145,7 @@ function geoRender() {
 
 /** Live arithmetic for the current step. */
 function geoReadout() {
-  const st = geo.step, w = geo.w, b = gB(), n = norm(w);
+  const st = geo.step, w = geo.w, b = geo.b, n = norm(w);
   const W = "<b>w</b>", X = "<b>x</b>";
   const rows = [];
   const row = (k, v) => rows.push(`<div class="row"><span>${k}</span>
@@ -144,12 +160,13 @@ function geoReadout() {
     row("slope &minus;<i>w</i>₀ / <i>w</i>₁", m);
     row("crosses <i>x</i>₁ axis at <i>b</i> / <i>w</i>₁", c);
   } else if (st === 2) {
-    const d = perp(mul(w, 1 / n)), A = mul(d, geo.ta), B = mul(d, geo.tb);
+    const A = gOnLine(geo.ta), B = gOnLine(geo.tb);
+    row("<i>b</i>", fmt(b));
     row(`<b>x</b><sub>A</sub>, <b>x</b><sub>B</sub>`, `${fvec(A)}, ${
       fvec(B)}`);
-    row(`${W}·<b>x</b><sub>A</sub>`, fmt(dot(w, A)));
-    row(`${W}·<b>x</b><sub>B</sub>`, fmt(dot(w, B)));
-    row(`${W}·(<b>x</b><sub>A</sub> &minus; <b>x</b><sub>B</sub>)`,
+    row(`<b>x</b><sub>A</sub>·${W}`, fmt(dot(w, A)));
+    row(`<b>x</b><sub>B</sub>·${W}`, fmt(dot(w, B)));
+    row(`(<b>x</b><sub>A</sub> &minus; <b>x</b><sub>B</sub>)·${W}`,
       `${fmt(dot(w, A))} &minus; ${fmt(dot(w, B))} = ${fmt(dot(w,
       sub(A, B)))}`);
   } else if (st === 3) {
@@ -193,6 +210,7 @@ function geoReadout() {
     }
   }
   document.getElementById("g-read").innerHTML = rows.join("");
+  document.getElementById("g-bval").textContent = fmt(geo.b);
 }
 
 function geoSetStep(k) {
@@ -223,13 +241,13 @@ dragOn(gSvg, {
   },
   move(p) {
     const h = geo.drag, n = norm(geo.w), u = mul(geo.w, 1 / n);
-    const q = [clamp(p[0], -3, 3), clamp(p[1], -3, 3)];
+    const q = clampPlane(p);
     if (h === "w") {
       const r = norm(q);
       if (r < 0.15) return;
-      if (geo.step === 1) {
+      if (geo.step <= 2) {
         geo.w = q;
-      } else if (geo.step === 2 || (geo.step >= 4 && geo.free)) {
+      } else if (geo.step >= 4 && geo.free) {
         // b follows so the line keeps its distance from the origin.
         const dist = geo.b / n;
         geo.w = q;
@@ -243,7 +261,8 @@ dragOn(gSvg, {
     } else if (h === "line") {
       geo.b = dot(geo.w, q);
     } else if (h === "xa" || h === "xb") {
-      const t = clamp(dot(q, perp(u)), -2.8, 2.8);
+      const F = footOrigin(geo.w, geo.b);
+      const t = dot(sub(gOnLine(dot(sub(q, F), perp(u))), F), perp(u));
       if (h === "xa") geo.ta = t; else geo.tb = t;
     } else if (h === "alpha") {
       geo.alpha = dot(q, geo.w) / (n * n);

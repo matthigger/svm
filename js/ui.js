@@ -1,13 +1,13 @@
 // Shared drawing helpers: class colors, plane geometry and axes, 2-d
 // vector math, SVG strings for lines and arrows, pointer dragging and
-// number formatting. Every plane shows the square [-3, 3]^2.
+// number formatting. Every plane shows the square [-4, 4]^2.
 
 const SVGNS = "http://www.w3.org/2000/svg";
 // Class colors indexed by (y + 1) / 2: y = -1 blue, y = +1 orange.
 const COLORS = ["#2563eb", "#ea580c"];
 
 const PLANE = { w: 700, h: 700, x0: 46, x1: 686, y0: 14, y1: 654,
-  dom: [-3, 3] };
+  dom: [-4, 4] };
 
 /** Scales of plot box p: data to viewBox (sx, sy) and back (ix, iy). */
 function scales(p) {
@@ -23,6 +23,12 @@ function scales(p) {
 const S = scales(PLANE);
 
 function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+/** Point p clamped to the plot square, pad inside its edges. */
+function clampPlane(p, pad = 0) {
+  const lo = PLANE.dom[0] + pad, hi = PLANE.dom[1] - pad;
+  return [clamp(p[0], lo, hi), clamp(p[1], lo, hi)];
+}
 
 const dot = (a, b) => a[0] * b[0] + a[1] * b[1];
 const add = (a, b) => [a[0] + b[0], a[1] + b[1]];

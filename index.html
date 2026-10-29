@@ -101,10 +101,12 @@
       <ul class="try" data-show="geometry">
         <li>In step 1, drag the tip of <b>w</b> to make it twice as long.
           Does the line change?
-          <details class="answer"><summary>Answer</summary>No. Only the
-            direction of <b>w</b> sets the line <b>w</b>&middot;<b>x</b> =
-            0: <b>w</b> and 2<b>w</b> give the same points. Step 3 makes
-            this the reason we may assume ‖<b>w</b>‖ = 1.</details>
+          <details class="answer"><summary>Answer</summary>Yes, unless
+            <i>b</i> doubles too: <b>x</b>&middot;(2<b>w</b>) = <i>b</i> is
+            the line <b>x</b>&middot;<b>w</b> = <i>b</i>/2, half as far
+            from the origin. Scaling <b>w</b> and <i>b</i> together leaves
+            the line alone, which is why step 3 may assume ‖<b>w</b>‖ =
+            1.</details>
         </li>
         <li>In step 2, point <b>w</b> straight up, at [0, 1]. Which line
           is it?
@@ -191,7 +193,7 @@
       <svg id="g-stage" aria-label="the line w·x = b and the vector
         w"></svg>
       <p class="hint" id="g-hint">Drag the white points and the tip of
-        <b>w</b>. From step 3 on, drag the line itself to change
+        <b>w</b>. Except in step 2, drag the line itself to change
         <i>b</i>.</p>
     </div>
 
@@ -204,19 +206,23 @@
         </div>
 
         <div class="step" data-step="1">
-          <h2>1. The line <b>w</b>&middot;<b>x</b> = 0</h2>
-          <p>In 2-d, <b>w</b>&middot;<b>x</b> = <i>w</i>₀<i>x</i>₀ +
-            <i>w</i>₁<i>x</i>₁ = 0 solves to</p>
+          <h2>1. <b>x</b>&middot;<b>w</b> = <i>b</i> is a line</h2>
+          <p>In 2-d, <b>x</b>&middot;<b>w</b> = <i>w</i>₀<i>x</i>₀ +
+            <i>w</i>₁<i>x</i>₁ = <i>b</i> solves to</p>
           <div class="formula"><i>x</i>₁ = &minus;<span
             class="frac"><span><i>w</i>₀</span><span><i>w</i>₁</span></span>
-            <i>x</i>₀</div>
-          <p>a line through the origin with slope &minus;<i>w</i>₀ /
-            <i>w</i>₁ (the green triangle).</p>
+            <i>x</i>₀ + <span
+            class="frac"><span><i>b</i></span><span><i>w</i>₁</span></span>
+          </div>
+          <p>a line with slope &minus;<i>w</i>₀ / <i>w</i>₁ (the green
+            triangle), crossing the <i>x</i>₁ axis at <i>b</i> /
+            <i>w</i>₁. Drag the line to change <i>b</i>.</p>
         </div>
         <div class="step" data-step="2">
           <h2>2. <b>w</b> is orthogonal to the line</h2>
-          <p>Take any two points <b>x</b><sub>A</sub>, <b>x</b><sub>B</sub>
-            on the line. Both satisfy <b>w</b>&middot;<b>x</b> = 0, so</p>
+          <p>Set <i>b</i> = 0 for now. Take any two points
+            <b>x</b><sub>A</sub>, <b>x</b><sub>B</sub> on the line. Both
+            satisfy <b>w</b>&middot;<b>x</b> = 0, so</p>
           <div class="formula"><b>w</b>&middot;(<b>x</b><sub>A</sub>
             &minus; <b>x</b><sub>B</sub>) = 0 &minus; 0 = 0</div>
           <p><b>w</b> is orthogonal to every vector along the line. This is
@@ -226,10 +232,9 @@
         </div>
         <div class="step" data-step="3">
           <h2>3. Assume ‖<b>w</b>‖ = 1</h2>
-          <p>Let the line be <b>w</b>&middot;<b>x</b> = <i>b</i> (drag it to
-            change <i>b</i>). For any <i>k</i> &gt; 0,
-            (<i>k</i><b>w</b>)&middot;<b>x</b> = <i>kb</i> holds at exactly
-            the same points. Slide ‖<b>w</b>‖: the arrow changes, the line
+          <p>For any <i>k</i> &gt; 0, <b>x</b>&middot;(<i>k</i><b>w</b>) =
+            <i>kb</i> holds at exactly the same points as
+            <b>x</b>&middot;<b>w</b> = <i>b</i>. Slide ‖<b>w</b>‖: the arrow changes, the line
             does not. So we may as well take ‖<b>w</b>‖ = 1, the dashed unit
             circle.</p>
           <label class="slider"><span>‖<b>w</b>‖</span>
@@ -240,11 +245,12 @@
             by ‖<b>w</b>‖</button></div>
         </div>
         <div class="step" data-step="4">
-          <h2>4. The point <i>b</i><b>w</b> is on the line</h2>
+          <h2>4. The point <b>x</b> = <i>b</i><b>w</b> is on the line
+            <b>x</b>&middot;<b>w</b> = <i>b</i></h2>
           <p>With ‖<b>w</b>‖ = 1,</p>
-          <div class="formula"><b>w</b>&middot;(<i>b</i><b>w</b>) =
+          <div class="formula">(<i>b</i><b>w</b>)&middot;<b>w</b> =
             <i>b</i>‖<b>w</b>‖<sup>2</sup> = <i>b</i></div>
-          <p>so <i>b</i><b>w</b> is on the line, where the <b>w</b> axis
+          <p>so <b>x</b> = <i>b</i><b>w</b> is on the line, where the <b>w</b> axis
             meets it at a right angle (step 2). It is the line's closest
             point to the origin, at distance <i>b</i>.</p>
         </div>

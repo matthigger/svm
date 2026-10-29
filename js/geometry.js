@@ -1,6 +1,6 @@
 // Margin geometry tab: six steps from the line w·x = 0 to the margin of
-// any point, (w·x - b) / ‖w‖, following the lesson 16 panels. Steps 1-2
-// draw the line through the origin (b = 0); from step 4 on, w has unit
+// any point, (w·x - b) / ‖w‖, following the lesson 16 panels. Step 2
+// draws the line through the origin (b = 0); from step 4 on, w has unit
 // length unless "let ‖w‖ vary" is checked.
 
 const geo = {
@@ -9,7 +9,7 @@ const geo = {
 };
 const gSvg = planeSvg("g-stage");
 
-function gB() { return geo.step <= 2 ? 0 : geo.b; }
+function gB() { return geo.step === 2 ? 0 : geo.b; }
 function gUnit() { return geo.step >= 4 && !geo.free; }
 
 /** Rescale w and b together (the line stays) so that ‖w‖ = r. */
@@ -52,18 +52,18 @@ function geoRender() {
   }
 
   s += lineSvg(w, b, 'class="bound"');
-  if (st >= 3) s += lineSvg(w, b, 'class="hit" data-h="line"');
+  if (st !== 2) s += lineSvg(w, b, 'class="hit" data-h="line"');
   const lineEnd = clipLine(F, d);
   if (lineEnd) {
     const e = lineEnd[1], right = e[0] > 2.5;
-    top += gLabel(e, `${W_T}·<tspan class="vec">x</tspan> = ${
-      st <= 2 ? "0" : "<tspan class='sym'>b</tspan>"}`, "ink",
+    top += gLabel(e, `<tspan class="vec">x</tspan>·${W_T} = ${
+      st === 2 ? "0" : "<tspan class='sym'>b</tspan>"}`, "ink",
       right ? -10 : 8, e[1] > 2.5 ? 22 : -8, right ? "end" : "start");
   }
 
   if (st === 1 && Math.abs(w[1]) > 1e-6) {
     const m = -w[0] / w[1], r = Math.min(1, 1.2 / Math.abs(m));
-    const P = mul(d[0] >= 0 ? d : mul(d, -1), 0.9);
+    const P = add(F, mul(d[0] >= 0 ? d : mul(d, -1), 0.9));
     const Cn = add(P, [r, 0]), E = add(P, [r, m * r]);
     s += `<path class="slope" d="M${px(P)} L${px(Cn)} L${px(E)}"/>`;
     top += gLabel(add(P, [r / 2, 0]), fmt(r), "green", 0, m > 0 ? 18 : -8,
@@ -91,7 +91,8 @@ function geoRender() {
     s += segSvg([0, 0], F, 'class="dist"');
     top += `<circle class="mark" cx="${S.sx(F[0])}" cy="${S.sy(F[1])}"
       r="6"/>`;
-    top += gLabel(F, gUnit() ? `<tspan class="sym">b</tspan>${W_T}` :
+    top += gLabel(F, gUnit() ? `${st === 4 ? '<tspan class="vec">x' +
+      "</tspan> = " : ""}<tspan class="sym">b</tspan>${W_T}` :
       `(<tspan class="sym">b</tspan> / ‖${W_T}‖²) ${W_T}`, "ink", -12, 4,
       "end");
   }
@@ -136,9 +137,12 @@ function geoReadout() {
   row(W, fvec(w));
   if (st === 1) {
     const m = Math.abs(w[1]) > 1e-6 ? fmt(-w[0] / w[1]) : "undefined";
-    row(`${W}·${X} = 0`, `${fmt(w[0])} <i>x</i>₀ + ${fmt(w[1])} <i>x</i>₁
-      = 0`);
+    const c = Math.abs(w[1]) > 1e-6 ? fmt(b / w[1]) : "none";
+    row("<i>b</i>", fmt(b));
+    row(`${X}·${W} = <i>b</i>`, `${fmt(w[0])} <i>x</i>₀ + ${fmt(w[1])}
+      <i>x</i>₁ = ${fmt(b)}`);
     row("slope &minus;<i>w</i>₀ / <i>w</i>₁", m);
+    row("crosses <i>x</i>₁ axis at <i>b</i> / <i>w</i>₁", c);
   } else if (st === 2) {
     const d = perp(mul(w, 1 / n)), A = mul(d, geo.ta), B = mul(d, geo.tb);
     row(`<b>x</b><sub>A</sub>, <b>x</b><sub>B</sub>`, `${fvec(A)}, ${
@@ -161,7 +165,7 @@ function geoReadout() {
     if (!gUnit()) row("‖<b>w</b>‖", fmt(n));
     if (st === 4) {
       row(gUnit() ? `<i>b</i>${W}` : `(<i>b</i>/‖${W}‖²) ${W}`, fvec(F));
-      row(`${W}·(<i>b</i>${W})`, gUnit()
+      row(`(<i>b</i>${W})·${W}`, gUnit()
         ? `<i>b</i> ‖${W}‖² = ${fmt(b)}`
         : `<i>b</i> ‖${W}‖² = ${fmt(b * n * n)}`);
       row("distance to origin", `|<i>b</i>| / ‖${W}‖ = ${fmt(Math.abs(b) /
@@ -223,9 +227,11 @@ dragOn(gSvg, {
     if (h === "w") {
       const r = norm(q);
       if (r < 0.15) return;
-      if (geo.step <= 2 || (geo.step >= 4 && geo.free)) {
+      if (geo.step === 1) {
+        geo.w = q;
+      } else if (geo.step === 2 || (geo.step >= 4 && geo.free)) {
         // b follows so the line keeps its distance from the origin.
-        const dist = gB() / n;
+        const dist = geo.b / n;
         geo.w = q;
         geo.b = dist * r;
       } else {

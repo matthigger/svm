@@ -1,7 +1,7 @@
 // Hard-margin tab: the widest separating line (C = 1e5 stands in for the
-// hard margin), its street, its support vectors with their alphas, and
-// w = sum_i alpha_i y_i x_i drawn head to tail. Samples can be dragged
-// or flipped; the fit follows.
+// hard margin), its street, and its support vectors with their alphas and
+// terms of w = sum_i alpha_i y_i x_i. Samples can be dragged or flipped;
+// the fit follows.
 
 const HARD_C = 1e5;
 const hard = {
@@ -76,35 +76,10 @@ function hardReadout() {
   if (hard.sep) hardSum();
 }
 
-/** Head-to-tail sum alpha_i y_i x_i over the support vectors, and table. */
+/** Table of the support vectors' alphas and their terms of w. */
 function hardSum() {
   const { X, y } = hard, fit = hard.fit, sv = hard.sv;
   const terms = sv.map(i => mul(X[i], fit.alpha[i] * y[i]));
-  const pts = [[0, 0]];
-  for (const t of terms) pts.push(add(pts[pts.length - 1], t));
-  const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
-  const lo = [Math.min(...xs), Math.min(...ys)];
-  const hi = [Math.max(...xs), Math.max(...ys)];
-  const box = { w: 340, h: 260, pad: 26 };
-  const k = Math.min((box.w - 2 * box.pad) / Math.max(hi[0] - lo[0], 1e-9),
-    (box.h - 2 * box.pad) / Math.max(hi[1] - lo[1], 1e-9));
-  const ox = box.w / 2 - k * (lo[0] + hi[0]) / 2;
-  const oy = box.h / 2 + k * (lo[1] + hi[1]) / 2;
-  const s2 = { sx: v => ox + k * v, sy: v => oy - k * v };
-  let s = `<line class="grid zero" x1="0" x2="${box.w}" y1="${oy}"
-    y2="${oy}"/><line class="grid zero" x1="${ox}" x2="${ox}" y1="0"
-    y2="${box.h}"/>`;
-  s += arrowSvg([0, 0], fit.w, "w thick", s2, 15);
-  terms.forEach((t, j) => {
-    const a = pts[j], c = pts[j + 1], m = mul(add(a, c), 0.5);
-    s += arrowSvg(a, c, y[sv[j]] > 0 ? "pos" : "neg", s2, 10);
-    s += `<text class="lbl small" x="${s2.sx(m[0]) + 6}"
-      y="${s2.sy(m[1]) - 6}">${j + 1}</text>`;
-  });
-  s += `<text class="lbl violet" x="${s2.sx(fit.w[0]) + 8}"
-    y="${s2.sy(fit.w[1]) + 4}"><tspan class="vec">w</tspan></text>`;
-  document.getElementById("h-sum").innerHTML = s;
-
   let t = `<table class="alpha"><tr><th>#</th><th><i>y<sub>i</sub></i></th>
     <th><i>α<sub>i</sub></i></th><th><i>α<sub>i</sub>y<sub>i</sub></i>${
     XI}</th><th>${YF}</th></tr>`;

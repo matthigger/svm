@@ -12,9 +12,9 @@ Notation follows the DS 4400 notes: weights **w**, offset b, labels ±1,
   point αw has margin α − b; projecting any x onto the w axis gives
   x·w − b, or (w·x − b)/‖w‖ for any length of w. Drag w's tip, the line
   and the points; the readout shows the arithmetic live.
-- **Hard margin.** The widest line: its street, the support vectors with
-  their α, and w = Σ αᵢyᵢxᵢ drawn head to tail. Drag a non-support sample
-  and nothing moves.
+- **Hard margin.** The widest line: its street, and a table of the
+  support vectors with their α and terms of w = Σ αᵢyᵢxᵢ. Drag a
+  non-support sample and nothing moves.
 - **Soft margin.** A C slider; slack drawn as a stick from each violating
   sample to its own margin line (inside the margin, or the wrong side);
   the margin and support-vector count swept over C (click the sweep to

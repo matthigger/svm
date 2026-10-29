@@ -129,8 +129,8 @@
             <i>α</i>s grow. Past the other class's samples there is no
             separating line at all.</details>
         </li>
-        <li>In the <b>w</b> = &sum; <i>α<sub>i</sub>y<sub>i</sub></i><b>x</b><sub><i>i</i></sub>
-          card, why are there support vectors from both classes?
+        <li>In the support vectors table, why are there support vectors
+          from both classes?
           <details class="answer"><summary>Answer</summary>&sum;
             <i>α<sub>i</sub>y<sub>i</sub></i> = 0 with every
             <i>α<sub>i</sub></i> &gt; 0 needs some <i>y<sub>i</sub></i> =
@@ -296,15 +296,12 @@
       </div>
       <div class="card readout" id="h-read"></div>
       <div class="card" id="h-sum-card">
-        <h3><b>w</b> = &sum; <i>α<sub>i</sub>y<sub>i</sub></i><b>x</b><sub><i>i</i></sub>,
-          head to tail</h3>
-        <svg id="h-sum" viewBox="0 0 340 260" aria-label="the support
-          vectors' terms adding up to w"></svg>
+        <h3>Support vectors: <b>w</b> = &sum;
+          <i>α<sub>i</sub>y<sub>i</sub></i><b>x</b><sub><i>i</i></sub></h3>
         <div class="readout" id="h-alpha"></div>
-        <p class="muted">Each arrow is one support vector's term
-          <i>α<sub>i</sub>y<sub>i</sub></i><b>x</b><sub><i>i</i></sub>
-          (numbers match the plot); they add up to the violet <b>w</b>.
-          Every other sample has <i>α<sub>i</sub></i> = 0.</p>
+        <p class="muted">One row per support vector (numbers match the
+          plot). Every other sample has <i>α<sub>i</sub></i> = 0, so only
+          these rows add up to <b>w</b>.</p>
       </div>
     </div>
   </main>

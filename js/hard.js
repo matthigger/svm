@@ -9,9 +9,9 @@ const hard = {
   drag: null,
 };
 const hSvg = planeSvg("h-stage");
-// HTML for x_i and for y_i (w·x_i - b).
+// HTML for x_i and for y_i (w·x_i + b).
 const XI = "<b>x</b><sub><i>i</i></sub>";
-const YF = `<i>y<sub>i</sub></i>(<b>w</b>·${XI} &minus; <i>b</i>)`;
+const YF = `<i>y<sub>i</sub></i>(<b>w</b>·${XI} + <i>b</i>)`;
 
 function hardData() {
   const d = makeBlobs(hard.nPer, 3.4, 0.5, hard.seed);
@@ -36,13 +36,14 @@ function hardRender() {
   if (hard.sep) {
     s += lineSvg(w, b, `class="band" stroke-width="${2 * S.k / n}"
       clip-path="url(#h-clip)"`);
-    s += lineSvg(w, b + 1, 'class="edge"');
+    // the margin lines w·x + b = +1 and -1
     s += lineSvg(w, b - 1, 'class="edge"');
+    s += lineSvg(w, b + 1, 'class="edge"');
     s += lineSvg(w, b, 'class="bound"');
 
     // 1/‖w‖ bracket from the boundary to the +1 margin line, near the data.
     const mean = mul(X.reduce(add, [0, 0]), 1 / X.length);
-    const F = sub(mean, mul(w, (dot(w, mean) - b) / (n * n)));
+    const F = sub(mean, mul(w, (dot(w, mean) + b) / (n * n)));
     const G = add(F, mul(w, 1 / (n * n)));
     s += segSvg(F, G, 'class="marg"');
     const gx = clamp(S.sx(G[0]) + 8, PLANE.x0 + 4, PLANE.x1 - 150);

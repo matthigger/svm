@@ -1,5 +1,5 @@
-// Linear SVM solver. Decision rule y_hat = sign(w·x - b), as in the notes
-// (sklearn's intercept_ is -b).
+// Linear SVM solver. Decision rule y_hat = sign(w·x + b), as in sklearn
+// (intercept_ is b).
 
 /**
  * Fit a soft-margin linear SVM by SMO on the dual (Platt 1998), each step
@@ -19,7 +19,7 @@
  *
  * Returns:
  *   {w, b, alpha, f, xi}: w (2,), offset b, alpha (n,) dual weights,
- *     f (n,) scores w·x_i - b, xi (n,) slacks max(0, 1 - y_i f_i)
+ *     f (n,) scores w·x_i + b, xi (n,) slacks max(0, 1 - y_i f_i)
  */
 function fitSvm(X, y, C, init = null, tol = 1e-6, maxIter = 200000) {
   const n = X.length;
@@ -70,8 +70,8 @@ function fitSvm(X, y, C, init = null, tol = 1e-6, maxIter = 200000) {
     }
   }
 
-  // Offset: average over free alphas (on the margin), else the midpoint
-  // of the feasible interval.
+  // Offset: LIBSVM's rho (decision w·x - rho) averaged over free alphas
+  // (on the margin), else the midpoint of the feasible interval; b = -rho.
   let nFree = 0, sumFree = 0, ub = Infinity, lb = -Infinity;
   for (let t = 0; t < n; t++) {
     const yG = y[t] * G[t];
@@ -81,14 +81,14 @@ function fitSvm(X, y, C, init = null, tol = 1e-6, maxIter = 200000) {
       if (y[t] === 1) ub = Math.min(ub, yG); else lb = Math.max(lb, yG);
     } else { nFree++; sumFree += yG; }
   }
-  const b = nFree ? sumFree / nFree : (ub + lb) / 2;
+  const b = -(nFree ? sumFree / nFree : (ub + lb) / 2);
 
   const w = [0, 0];
   for (let t = 0; t < n; t++) {
     w[0] += a[t] * y[t] * X[t][0];
     w[1] += a[t] * y[t] * X[t][1];
   }
-  const f = X.map(x => dot(w, x) - b);
+  const f = X.map(x => dot(w, x) + b);
   const xi = f.map((v, t) => Math.max(0, 1 - y[t] * v));
   return { w, b, alpha: Array.from(a), f, xi, C };
 }

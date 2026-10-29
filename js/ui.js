@@ -62,10 +62,10 @@ function clipLine(p, d, dom = PLANE.dom) {
   return [add(p, mul(d, lo)), add(p, mul(d, hi))];
 }
 
-/** Point of the line w·x = b nearest the origin: (b / w·w) w. */
-function footOrigin(w, b) { return mul(w, b / dot(w, w)); }
+/** Point of the line w·x + b = 0 nearest the origin: -(b / w·w) w. */
+function footOrigin(w, b) { return mul(w, -b / dot(w, w)); }
 
-/** SVG line for w·x = b across the plot (empty if it misses). */
+/** SVG line for w·x + b = 0 across the plot (empty if it misses). */
 function lineSvg(w, b, attrs) {
   const seg = clipLine(footOrigin(w, b), perp(w));
   if (!seg) return "";
@@ -108,13 +108,13 @@ function rightAngleSvg(at, u, v, size = 0.22) {
 }
 
 /**
- * Polygon of the plot square on the side w·x - b > 0 (sgn 1) or < 0
+ * Polygon of the plot square on the side w·x + b > 0 (sgn 1) or < 0
  * (sgn -1), by clipping the square against the half-plane.
  */
 function halfPlane(w, b, sgn) {
   const [lo, hi] = PLANE.dom;
   const sq = [[lo, lo], [hi, lo], [hi, hi], [lo, hi]];
-  const f = p => sgn * (dot(w, p) - b);
+  const f = p => sgn * (dot(w, p) + b);
   const out = [];
   for (let i = 0; i < 4; i++) {
     const p = sq[i], q = sq[(i + 1) % 4], fp = f(p), fq = f(q);

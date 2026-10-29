@@ -38,7 +38,10 @@ function softSweep() {
   });
 }
 
-/** Slack case of sample i: 0 outside the margin, 1 inside, 2 wrong side. */
+/**
+ * Slack case of sample i: 0 outside the margin, 1 inside the margin (a
+ * margin violation), 2 misclassified.
+ */
 function caseOf(xi) { return xi <= 1e-6 ? 0 : xi <= 1 ? 1 : 2; }
 
 function softRender() {
@@ -46,13 +49,14 @@ function softRender() {
   let s = axesSvg();
   s += `<polygon class="half pos" points="${halfPlane(w, b, 1)}"/>
     <polygon class="half neg" points="${halfPlane(w, b, -1)}"/>`;
-  s += lineSvg(w, b + 1, 'class="edge"');
+  // the margin lines w·x + b = +1 and -1
   s += lineSvg(w, b - 1, 'class="edge"');
+  s += lineSvg(w, b + 1, 'class="edge"');
   s += lineSvg(w, b, 'class="bound"');
 
   // 1/‖w‖ bracket from the boundary to the +1 margin line, near the data.
   const mean = mul(X.reduce(add, [0, 0]), 1 / X.length);
-  const F = sub(mean, mul(w, (dot(w, mean) - b) / (n * n)));
+  const F = sub(mean, mul(w, (dot(w, mean) + b) / (n * n)));
   const G = add(F, mul(w, 1 / (n * n)));
   s += segSvg(F, G, 'class="marg"');
   const gx = clamp(S.sx(G[0]) + 8, PLANE.x0 + 4, PLANE.x1 - 150);
@@ -101,8 +105,9 @@ function softReadout() {
     row("support vectors", `${soft.sv.length} <span class="muted">(${
       nBound} with <i>α</i> = <i>C</i>)</span>`) +
     row('<i class="kc c0"></i>outside the margin, <i>ξ</i> = 0', cases[0]) +
-    row('<i class="kc c1"></i>inside, 0 &lt; <i>ξ</i> &le; 1', cases[1]) +
-    row('<i class="kc c2"></i>wrong side, <i>ξ</i> &gt; 1', cases[2]) +
+    row('<i class="kc c1"></i>inside the margin, 0 &lt; <i>ξ</i> &le; 1',
+      cases[1]) +
+    row('<i class="kc c2"></i>misclassified, <i>ξ</i> &gt; 1', cases[2]) +
     row("training error", `${Math.round(100 * cases[2] / N)}%`);
 
   const i = soft.hover, el = document.getElementById("s-hover");
@@ -114,18 +119,18 @@ function softReadout() {
   const yi = soft.y[i];
   el.innerHTML = `<h3>Sample ${classDot(yi)}${yi > 0 ? "+1" : "&minus;1"}
     </h3>` +
-    row("<b>w</b>·<b>x</b> &minus; <i>b</i>", fmt(fit.f[i])) +
-    row("<i>y</i>(<b>w</b>·<b>x</b> &minus; <i>b</i>)", fmt(yi * fit.f[i])) +
+    row("<b>w</b>·<b>x</b> + <i>b</i>", fmt(fit.f[i])) +
+    row("<i>y</i>(<b>w</b>·<b>x</b> + <i>b</i>)", fmt(yi * fit.f[i])) +
     row("slack <i>ξ</i>", fmt(fit.xi[i])) +
     row("<i>α</i>", fmt(fit.alpha[i], 3)) +
     row("case", ["outside the margin", "inside the margin",
-      "wrong side"][caseOf(fit.xi[i])]);
+      "misclassified"][caseOf(fit.xi[i])]);
 }
 
 const HINGE = { w: 520, h: 224, x0: 40, x1: 508, y0: 24, y1: 182,
   xdom: [-3, 3], ydom: [0, 4] };
 
-/** Each sample at (y_i f_i, xi_i) on the hinge max(0, 1 - y f). */
+/** Each sample at (y_i f_i, xi_i) on the hinge max(0, 1 - y_i f_i). */
 function softHinge() {
   const p = HINGE, fit = soft.fit;
   const sx = v => p.x0 + (clamp(v, ...p.xdom) - p.xdom[0]) /
@@ -147,15 +152,16 @@ function softHinge() {
       text-anchor="end">${v}</text>`;
   }
   s += `<text class="zl" x="${(p.x0 + sx(0)) / 2}" y="${p.y0 - 8}"
-    text-anchor="middle">wrong side</text><text class="zl" x="${sx(0.5)}"
-    y="${p.y0 - 8}" text-anchor="middle">inside</text><text class="zl"
+    text-anchor="middle">misclassified</text><text class="zl"
+    x="${sx(0.5)}" y="${p.y0 - 8}"
+    text-anchor="middle">inside the margin</text><text class="zl"
     x="${(sx(1) + p.x1) / 2}" y="${p.y0 - 8}"
     text-anchor="middle">outside the margin</text>`;
   s += `<polyline class="hinge" points="${sx(-3)},${sy(4)} ${sx(1)},${sy(0)}
     ${sx(3)},${sy(0)}"/>`;
   s += `<text class="axis-label sm" x="${(p.x0 + p.x1) / 2}"
     y="${p.y1 + 32}" text-anchor="middle"><tspan class="sym">y</tspan>(<tspan
-    class="vec">w</tspan>·<tspan class="vec">x</tspan> − <tspan
+    class="vec">w</tspan>·<tspan class="vec">x</tspan> + <tspan
     class="sym">b</tspan>)</text><text class="axis-label sm"
     text-anchor="middle" x="12" y="${(p.y0 + p.y1) / 2 + 4}"><tspan
     class="sym">ξ</tspan></text>`;

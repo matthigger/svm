@@ -1,16 +1,16 @@
-// Margin geometry tab: six steps from the line x·w = b to the margin of
-// any point, (w·x - b) / ‖w‖, following the lesson 16 panels. From step 4
-// on, w has unit length unless "let ‖w‖ vary" is checked.
+// Margin geometry tab: six steps from the line w·x + b = 0 to the margin
+// of any point, (w·x + b) / ‖w‖, following the lesson 16 panels. From
+// step 4 on, w has unit length unless "let ‖w‖ vary" is checked.
 
 const geo = {
-  step: 1, w: [1.2, 1.6], b: 3, ta: -0.4, tb: -2.6, alpha: 2.6,
+  step: 1, w: [1.2, 1.6], b: -3, ta: -0.4, tb: -2.6, t: 2.6,
   x: [2.2, 1.8], free: false, drag: null,
 };
 const gSvg = planeSvg("g-stage");
 
 /**
- * Point t along the line x·w = b from its foot bw / ‖w‖², kept on the
- * visible part of the line.
+ * Point t along the line w·x + b = 0 from its foot -bw / ‖w‖², kept on
+ * the visible part of the line.
  */
 function gOnLine(t) {
   const F = footOrigin(geo.w, geo.b), d = perp(mul(geo.w, 1 / norm(geo.w)));
@@ -44,6 +44,13 @@ function subT(sym, s) {
 
 const W_T = '<tspan class="vec">w</tspan>';
 
+/** "a x₀ + c x₁ + b" with true signs; tag wraps each x (HTML or SVG). */
+function linStr(w, b, x) {
+  const sg = v => (v < 0 ? "−" : "+");
+  return `${fmt(w[0])} ${x}₀ ${sg(w[1])} ${fmt(Math.abs(w[1]))} ${x}₁ ${
+    sg(b)} ${fmt(Math.abs(b))}`;
+}
+
 function geoRender() {
   const st = geo.step, w = geo.w, b = geo.b, n = norm(w), u = mul(w, 1 / n);
   const d = perp(u), F = footOrigin(w, b);
@@ -69,9 +76,9 @@ function geoRender() {
     const e = lineEnd[1], edge = PLANE.dom[1] - 0.5, right = e[0] > edge;
     const X_T = '<tspan class="sym">x</tspan>';
     const eq = st === 3
-      ? `${fmt(w[0])}${X_T}₀ ${w[1] < 0 ? "−" : "+"} ${fmt(Math.abs(w[1]))}${
-        X_T}₁ = ${fmt(b)}`
-      : `<tspan class="vec">x</tspan>·${W_T} = <tspan class="sym">b</tspan>`;
+      ? `${linStr(w, b, X_T)} = 0`
+      : `${W_T}·<tspan class="vec">x</tspan> + <tspan class="sym">b</tspan>
+        = 0`;
     top += gLabel(e, eq, "ink",
       right ? -10 : 8, e[1] > edge ? 22 : -8, right ? "end" : "start");
   }
@@ -103,25 +110,26 @@ function geoRender() {
     top += gLabel(u, `${W_T} / ‖${W_T}‖`, "muted", 8, 18);
   }
   if (st >= 4) {
-    s += rightAngleSvg(F, mul(u, -Math.sign(b || 1)), d);
+    // F = -b w / ‖w‖²: the mark's leg points back toward the origin
+    s += rightAngleSvg(F, mul(u, b ? Math.sign(b) : -1), d);
     s += segSvg([0, 0], F, 'class="dist"');
     top += `<circle class="mark" cx="${S.sx(F[0])}" cy="${S.sy(F[1])}"
       r="6"/>`;
     top += gLabel(F, gUnit() ? `${st === 4 ? '<tspan class="vec">x' +
-      "</tspan> = " : ""}<tspan class="sym">b</tspan>${W_T}` :
-      `(<tspan class="sym">b</tspan> / ‖${W_T}‖²) ${W_T}`, "ink", -12, 4,
+      "</tspan> = " : ""}−<tspan class="sym">b</tspan>${W_T}` :
+      `(−<tspan class="sym">b</tspan> / ‖${W_T}‖²) ${W_T}`, "ink", -12, 4,
       "end");
   }
   if (st === 5) {
-    const A = mul(w, geo.alpha);
+    const A = mul(w, geo.t);
     s += segSvg(F, A, 'class="marg"');
-    top += `<circle class="pt" data-h="alpha" cx="${S.sx(A[0])}"
+    top += `<circle class="pt" data-h="t" cx="${S.sx(A[0])}"
       cy="${S.sy(A[1])}" r="8"/>`;
-    top += gLabel(A, `<tspan class="sym">α</tspan>${W_T}`, "ink", 12, 5);
+    top += gLabel(A, `<tspan class="sym">t</tspan>${W_T}`, "ink", 12, 5);
   }
   if (st === 6) {
     const x = geo.x, c = dot(x, w) / dot(w, w), P = mul(w, c);
-    const L = sub(x, mul(w, (dot(w, x) - b) / dot(w, w)));
+    const L = sub(x, mul(w, (dot(w, x) + b) / dot(w, w)));
     s += segSvg(x, P, 'class="proj"');
     s += rightAngleSvg(P, mul(u, -Math.sign(c || 1)), mul(d,
       Math.sign(dot(sub(x, P), d)) || 1), 0.16);
@@ -153,60 +161,60 @@ function geoReadout() {
   row(W, fvec(w));
   if (st === 1) {
     const m = Math.abs(w[1]) > 1e-6 ? fmt(-w[0] / w[1]) : "undefined";
-    const c = Math.abs(w[1]) > 1e-6 ? fmt(b / w[1]) : "none";
+    const c = Math.abs(w[1]) > 1e-6 ? fmt(-b / w[1]) : "none";
     row("<i>b</i>", fmt(b));
-    row(`${X}·${W} = <i>b</i>`, `${fmt(w[0])} <i>x</i>₀ + ${fmt(w[1])}
-      <i>x</i>₁ = ${fmt(b)}`);
+    row(`${W}·${X} + <i>b</i> = 0`, `${linStr(w, b, "<i>x</i>")} = 0`);
     row("slope &minus;<i>w</i>₀ / <i>w</i>₁", m);
-    row("crosses <i>x</i>₁ axis at <i>b</i> / <i>w</i>₁", c);
+    row("crosses <i>x</i>₁ axis at &minus;<i>b</i> / <i>w</i>₁", c);
   } else if (st === 2) {
     const A = gOnLine(geo.ta), B = gOnLine(geo.tb);
     row("<i>b</i>", fmt(b));
     row(`<b>x</b><sub>A</sub>, <b>x</b><sub>B</sub>`, `${fvec(A)}, ${
       fvec(B)}`);
-    row(`<b>x</b><sub>A</sub>·${W}`, fmt(dot(w, A)));
-    row(`<b>x</b><sub>B</sub>·${W}`, fmt(dot(w, B)));
-    row(`(<b>x</b><sub>A</sub> &minus; <b>x</b><sub>B</sub>)·${W}`,
+    row(`${W}·<b>x</b><sub>A</sub>`, fmt(dot(w, A)));
+    row(`${W}·<b>x</b><sub>B</sub>`, fmt(dot(w, B)));
+    row(`${W}·(<b>x</b><sub>A</sub> &minus; <b>x</b><sub>B</sub>)`,
       `${fmt(dot(w, A))} &minus; ${fmt(dot(w, B))} = ${fmt(dot(w,
       sub(A, B)))}`);
   } else if (st === 3) {
     row("<i>b</i>", fmt(geo.b));
     row("‖<b>w</b>‖", fmt(n));
-    row("line", `${fmt(w[0])} <i>x</i>₀ + ${fmt(w[1])} <i>x</i>₁ = ${
-      fmt(geo.b)}`);
-    row("÷ ‖<b>w</b>‖", `${fmt(w[0] / n)} <i>x</i>₀ + ${fmt(w[1] / n)}
-      <i>x</i>₁ = ${fmt(geo.b / n)}`);
+    row("line", `${linStr(w, geo.b, "<i>x</i>")} = 0`);
+    row("÷ ‖<b>w</b>‖", `${linStr(mul(w, 1 / n), geo.b / n, "<i>x</i>")}
+      = 0`);
   } else {
     const F = footOrigin(w, b);
     row("<i>b</i>", fmt(b));
     if (!gUnit()) row("‖<b>w</b>‖", fmt(n));
     if (st === 4) {
-      row(gUnit() ? `<i>b</i>${W}` : `(<i>b</i>/‖${W}‖²) ${W}`, fvec(F));
-      row(`(<i>b</i>${W})·${W}`, gUnit()
-        ? `<i>b</i> ‖${W}‖² = ${fmt(b)}`
-        : `<i>b</i> ‖${W}‖² = ${fmt(b * n * n)}`);
+      row(gUnit() ? `&minus;<i>b</i>${W}` : `(&minus;<i>b</i>/‖${W}‖²) ${W}`,
+        fvec(F));
+      row(`${W}·(&minus;<i>b</i>${W}) + <i>b</i>`, gUnit()
+        ? `&minus;<i>b</i> ‖${W}‖² + <i>b</i> = ${fmt(dot(w, F) + b)}`
+        : `&minus;<i>b</i> ‖${W}‖² + <i>b</i> = ${
+          fmt(-b * n * n + b)}`);
       row("distance to origin", `|<i>b</i>| / ‖${W}‖ = ${fmt(Math.abs(b) /
         n)}`);
     } else if (st === 5) {
-      const al = geo.alpha;
-      row("<i>α</i>", fmt(al));
-      row(`‖<i>α</i>${W} &minus; <i>b</i>${W}‖`, gUnit()
-        ? `|<i>α</i> &minus; <i>b</i>| = ${fmt(Math.abs(al - b))}`
-        : `|<i>α</i>‖${W}‖ &minus; <i>b</i>/‖${W}‖| = ${
-          fmt(Math.abs(al * n - b / n))}`);
+      const t = geo.t;
+      row("<i>t</i>", fmt(t));
+      row(`‖<i>t</i>${W} + <i>b</i>${W}‖`, gUnit()
+        ? `|<i>t</i> + <i>b</i>| = ${fmt(Math.abs(t + b))}`
+        : `|<i>t</i>‖${W}‖ + <i>b</i>/‖${W}‖| = ${
+          fmt(Math.abs(t * n + b / n))}`);
       row("signed margin", gUnit()
-        ? `<i>α</i> &minus; <i>b</i> = ${fmt(al - b)}`
-        : fmt(al * n - b / n));
+        ? `<i>t</i> + <i>b</i> = ${fmt(t + b)}`
+        : fmt(t * n + b / n));
     } else {
       const x = geo.x, c = dot(x, w) / dot(w, w);
       row(X, fvec(x));
-      row(`<i>c</i> = ${X}·${W} / ${W}·${W}`, gUnit()
-        ? `${X}·${W} = ${fmt(c)}` : fmt(c));
+      row(`<i>c</i> = ${W}·${X} / ${W}·${W}`, gUnit()
+        ? `${W}·${X} = ${fmt(c)}` : fmt(c));
       row("margin", gUnit()
-        ? `${X}·${W} &minus; <i>b</i> = ${fmt(dot(x, w) - b)}`
-        : `(${W}·${X} &minus; <i>b</i>) / ‖${W}‖ = ${
-          fmt((dot(x, w) - b) / n)}`);
-      row("side", dot(x, w) - b >= 0 ? "positive (+1)" : "negative (−1)");
+        ? `${W}·${X} + <i>b</i> = ${fmt(dot(x, w) + b)}`
+        : `(${W}·${X} + <i>b</i>) / ‖${W}‖ = ${
+          fmt((dot(x, w) + b) / n)}`);
+      row("side", dot(x, w) + b >= 0 ? "positive (+1)" : "negative (−1)");
     }
   }
   document.getElementById("g-read").innerHTML = rows.join("");
@@ -259,13 +267,13 @@ dragOn(gSvg, {
       }
       geoSyncScale();
     } else if (h === "line") {
-      geo.b = dot(geo.w, q);
+      geo.b = -dot(geo.w, q);
     } else if (h === "xa" || h === "xb") {
       const F = footOrigin(geo.w, geo.b);
       const t = dot(sub(gOnLine(dot(sub(q, F), perp(u))), F), perp(u));
       if (h === "xa") geo.ta = t; else geo.tb = t;
-    } else if (h === "alpha") {
-      geo.alpha = dot(q, geo.w) / (n * n);
+    } else if (h === "t") {
+      geo.t = dot(q, geo.w) / (n * n);
     } else if (h === "x") {
       geo.x = q;
     }

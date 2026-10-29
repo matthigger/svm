@@ -3,27 +3,29 @@
 Interactive teaching demo of support vector machines, a companion to
 [Logistic regression, visually](https://github.com/matthigger/logistic_regression)
 and [Decision trees, visually](https://github.com/matthigger/decision_tree).
-Notation follows the DS 4400 notes: weights **w**, offset b, labels ±1,
-ŷ = sign(w·x − b). Three tabs:
+Notation is the standard soft-margin form (Cortes & Vapnik 1995, as in
+sklearn): weights **w**, offset b, labels ±1, ŷ = sign(w·x + b), dual
+multipliers αᵢ. Three tabs:
 
-- **Margin geometry.** Six steps from the line w·x = 0 to the margin of any
-  point: the slope −w₀/w₁; w orthogonal to the line; rescaling w and b
-  together leaves the line alone, so take ‖w‖ = 1; bw lies on the line; a
-  point αw has margin α − b; projecting any x onto the w axis gives
-  x·w − b, or (w·x − b)/‖w‖ for any length of w. Drag w's tip, the line
-  and the points; the readout shows the arithmetic live.
+- **Margin geometry.** Six steps from the line w·x + b = 0 to the margin
+  of any point: the slope −w₀/w₁; w orthogonal to the line; rescaling w
+  and b together leaves the line alone, so take ‖w‖ = 1; −bw lies on the
+  line; a point tw has margin t + b; projecting any x onto the w axis
+  gives w·x + b, or (w·x + b)/‖w‖ for any length of w. Drag w's tip, the
+  line and the points; the readout shows the arithmetic live.
 - **Hard margin.** The widest line: its street, and a table of the
-  support vectors with their α and terms of w = Σ αᵢyᵢxᵢ. Drag a
+  support vectors with their αᵢ and terms of w = Σ αᵢyᵢxᵢ. Drag a
   non-support sample and nothing moves.
 - **Soft margin.** A C slider; slack drawn as a stick from each violating
-  sample to its own margin line (inside the margin, or the wrong side);
-  the margin and support-vector count swept over C (click the sweep to
-  set C); and under it each sample's slack on the hinge
-  max(0, 1 − y(w·x − b)).
+  sample to its own margin line, by case (inside the margin, 0 < ξ ≤ 1,
+  or misclassified, ξ > 1); 0 ≤ αᵢ ≤ C, with αᵢ = C for every sample
+  with slack; the margin and support-vector count swept over C (click
+  the sweep to set C); and under it each sample's slack on the hinge
+  max(0, 1 − y(w·x + b)).
 
 Fits come from an SMO solver on the dual (`js/svm.js`); C = 1e5 stands in
 for the hard margin. It matches sklearn's `SVC(kernel="linear")` to four
-decimals (sklearn's `intercept_` is −b).
+decimals: w = `coef_`, b = `intercept_`, αᵢyᵢ = `dual_coef_`.
 
 Dragging a sample refits; clicking a sample flips its class.
 

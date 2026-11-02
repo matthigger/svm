@@ -49,14 +49,14 @@ function softRender() {
   let s = axesSvg();
   s += `<polygon class="half pos" points="${halfPlane(w, b, 1)}"/>
     <polygon class="half neg" points="${halfPlane(w, b, -1)}"/>`;
-  // the margin lines w·x + b = +1 and -1
-  s += lineSvg(w, b - 1, 'class="edge"');
+  // the margin lines w·x - b = +1 and -1, i.e. w·x = b + 1 and b - 1
   s += lineSvg(w, b + 1, 'class="edge"');
+  s += lineSvg(w, b - 1, 'class="edge"');
   s += lineSvg(w, b, 'class="bound"');
 
   // 1/‖w‖ bracket from the boundary to the +1 margin line, near the data.
   const mean = mul(X.reduce(add, [0, 0]), 1 / X.length);
-  const F = sub(mean, mul(w, (dot(w, mean) + b) / (n * n)));
+  const F = sub(mean, mul(w, (dot(w, mean) - b) / (n * n)));
   const G = add(F, mul(w, 1 / (n * n)));
   s += segSvg(F, G, 'class="marg"');
   const gx = clamp(S.sx(G[0]) + 8, PLANE.x0 + 4, PLANE.x1 - 150);
@@ -119,8 +119,8 @@ function softReadout() {
   const yi = soft.y[i];
   el.innerHTML = `<h3>Sample ${classDot(yi)}${yi > 0 ? "+1" : "&minus;1"}
     </h3>` +
-    row("<b>w</b>·<b>x</b> + <i>b</i>", fmt(fit.f[i])) +
-    row("<i>y</i>(<b>w</b>·<b>x</b> + <i>b</i>)", fmt(yi * fit.f[i])) +
+    row("<b>w</b>·<b>x</b> &minus; <i>b</i>", fmt(fit.f[i])) +
+    row("<i>y</i>(<b>w</b>·<b>x</b> &minus; <i>b</i>)", fmt(yi * fit.f[i])) +
     row("slack <i>ξ</i>", fmt(fit.xi[i])) +
     row("<i>α</i>", fmt(fit.alpha[i], 3)) +
     row("case", ["outside the margin", "inside the margin",
@@ -161,7 +161,7 @@ function softHinge() {
     ${sx(3)},${sy(0)}"/>`;
   s += `<text class="axis-label sm" x="${(p.x0 + p.x1) / 2}"
     y="${p.y1 + 32}" text-anchor="middle"><tspan class="sym">y</tspan>(<tspan
-    class="vec">w</tspan>·<tspan class="vec">x</tspan> + <tspan
+    class="vec">w</tspan>·<tspan class="vec">x</tspan> − <tspan
     class="sym">b</tspan>)</text><text class="axis-label sm"
     text-anchor="middle" x="12" y="${(p.y0 + p.y1) / 2 + 4}"><tspan
     class="sym">ξ</tspan></text>`;

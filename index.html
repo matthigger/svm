@@ -153,7 +153,7 @@
           <i>C</i>.
           <details class="answer"><summary>Answer</summary>Small
             <i>C</i>: slack is cheap, so a wide street with many samples
-            inside the margin (all support vectors). Large <i>C</i>: slack is
+            in it or wrong (all support vectors). Large <i>C</i>: slack is
             expensive, so the street narrows to push samples out, and fewer
             support vectors remain.</details>
         </li>
@@ -316,6 +316,12 @@
           <button id="h-reset" title="Undo drags and flips">Reset
             data</button>
         </div>
+        <div class="buttons">
+          <button id="h-worked" title="x+ = (2, 2), x- = (0, 0)">Worked
+            example</button>
+          <button id="h-ica4" title="the worked example plus (3, 3), y = +1">ICA 4:
+            + (3, 3)</button>
+        </div>
         <label class="slider"><span>Samples</span>
           <input type="range" id="h-n" step="1">
           <span id="h-nval" class="val"></span></label>
@@ -338,10 +344,8 @@
         <span class="key"><i class="ln ink"></i> boundary</span>
         <span class="key"><i class="ln dash"></i> margin lines
           <b>w</b>&middot;<b>x</b> + <i>b</i> = &plusmn;1</span>
-        <span class="key"><i class="ln c1"></i> slack, inside the
-          margin</span>
-        <span class="key"><i class="ln c2"></i> slack,
-          misclassified</span>
+        <span class="key"><i class="ln c1"></i> slack: in</span>
+        <span class="key"><i class="ln c2"></i> slack: wrong</span>
         <span class="key"><i class="dot ringk"></i> support vector</span>
       </div>
       <svg id="s-stage" aria-label="the soft-margin fit and each sample's

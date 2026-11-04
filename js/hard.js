@@ -136,6 +136,19 @@ document.getElementById("h-reset").onclick = () => {
   hardSolve();
   hardRender();
 };
+/** Load fixed samples (lesson 16's worked example and ICA 4). */
+function hardFixed(X, y) {
+  hard.X = X.map(x => x.slice());
+  hard.y = y.slice();
+  hard.X0 = X.map(x => x.slice());
+  hard.y0 = y.slice();
+  hardSolve();
+  hardRender();
+}
+const WORKED = [[[2, 2], [0, 0]], [1, -1]];
+document.getElementById("h-worked").onclick = () => hardFixed(...WORKED);
+document.getElementById("h-ica4").onclick = () =>
+  hardFixed([...WORKED[0], [3, 3]], [...WORKED[1], 1]);
 const hN = document.getElementById("h-n");
 hN.min = 3;
 hN.max = 25;

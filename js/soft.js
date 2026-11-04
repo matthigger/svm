@@ -39,10 +39,19 @@ function softSweep() {
 }
 
 /**
- * Slack case of sample i: 0 outside the margin, 1 inside the margin (a
- * margin violation), 2 misclassified.
+ * Slack class for drawing: 0 no slack (out or on), 1 in (inside the
+ * street), 2 wrong (misclassified).
  */
 function caseOf(xi) { return xi <= 1e-6 ? 0 : xi <= 1 ? 1 : 2; }
+
+/** Lesson 16's (and the quiz's) four cases: out, on, in, wrong. */
+const CASES = ["out", "on", "in", "wrong"];
+function case4(i) {
+  const fit = soft.fit, xi = fit.xi[i];
+  if (xi > 1) return 3;
+  if (xi > 1e-6) return 2;
+  return Math.abs(soft.y[i] * fit.f[i] - 1) < 1e-3 ? 1 : 0;
+}
 
 function softRender() {
   const { X, y } = soft, fit = soft.fit, { w, b } = fit, n = norm(w);
@@ -89,8 +98,8 @@ function softRender() {
 function softReadout() {
   const fit = soft.fit, n = norm(fit.w), N = soft.X.length;
   const sumXi = fit.xi.reduce((a, v) => a + v, 0);
-  const cases = [0, 0, 0];
-  for (const v of fit.xi) cases[caseOf(v)]++;
+  const cases = [0, 0, 0, 0];
+  for (let i = 0; i < N; i++) cases[case4(i)]++;
   const nBound = soft.sv.filter(i => fit.alpha[i] >= fit.C * (1 - 1e-9))
     .length;
   const row = (k, v) => `<div class="row"><span>${k}</span>
@@ -104,11 +113,14 @@ function softReadout() {
     row("objective", fmt(0.5 * n * n + fit.C * sumXi)) +
     row("support vectors", `${soft.sv.length} <span class="muted">(${
       nBound} with <i>α</i> = <i>C</i>)</span>`) +
-    row('<i class="kc c0"></i>outside the margin, <i>ξ</i> = 0', cases[0]) +
-    row('<i class="kc c1"></i>inside the margin, 0 &lt; <i>ξ</i> &le; 1',
-      cases[1]) +
-    row('<i class="kc c2"></i>misclassified, <i>ξ</i> &gt; 1', cases[2]) +
-    row("training error", `${Math.round(100 * cases[2] / N)}%`);
+    row('<i class="kc c0"></i>out: outside the street, <i>ξ</i> = 0',
+      cases[0]) +
+    row('<i class="kc c0"></i>on: on its edge, <i>ξ</i> = 0', cases[1]) +
+    row('<i class="kc c1"></i>in: inside the street, 0 &lt; <i>ξ</i> &le; 1',
+      cases[2]) +
+    row('<i class="kc c2"></i>wrong: misclassified, <i>ξ</i> &gt; 1',
+      cases[3]) +
+    row("training error", `${Math.round(100 * cases[3] / N)}%`);
 
   const i = soft.hover, el = document.getElementById("s-hover");
   if (i < 0) {
@@ -123,8 +135,7 @@ function softReadout() {
     row("<i>y</i>(<b>w</b>·<b>x</b> + <i>b</i>)", fmt(yi * fit.f[i])) +
     row("slack <i>ξ</i>", fmt(fit.xi[i])) +
     row("<i>α</i>", fmt(fit.alpha[i], 3)) +
-    row("case", ["outside the margin", "inside the margin",
-      "misclassified"][caseOf(fit.xi[i])]);
+    row("case", CASES[case4(i)]);
 }
 
 const HINGE = { w: 520, h: 224, x0: 40, x1: 508, y0: 24, y1: 182,
@@ -152,11 +163,11 @@ function softHinge() {
       text-anchor="end">${v}</text>`;
   }
   s += `<text class="zl" x="${(p.x0 + sx(0)) / 2}" y="${p.y0 - 8}"
-    text-anchor="middle">misclassified</text><text class="zl"
+    text-anchor="middle">wrong</text><text class="zl"
     x="${sx(0.5)}" y="${p.y0 - 8}"
-    text-anchor="middle">inside the margin</text><text class="zl"
+    text-anchor="middle">in</text><text class="zl"
     x="${(sx(1) + p.x1) / 2}" y="${p.y0 - 8}"
-    text-anchor="middle">outside the margin</text>`;
+    text-anchor="middle">out (on: the kink)</text>`;
   s += `<polyline class="hinge" points="${sx(-3)},${sy(4)} ${sx(1)},${sy(0)}
     ${sx(3)},${sy(0)}"/>`;
   s += `<text class="axis-label sm" x="${(p.x0 + p.x1) / 2}"

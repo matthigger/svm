@@ -221,14 +221,15 @@
             <b>w</b>.</p>
         </div>
         <div class="step" data-step="3">
-          <h2>3. Assume ‖<b>w</b>‖ = 1</h2>
+          <h2>3. WLOG ‖<b>w</b>‖ = 1</h2>
           <p>Without loss of generality, let's scale <b>w</b> so that
             ‖<b>w</b>‖ = 1 (the dashed unit circle). <i>b</i> has to scale
             with it so the equation still describes the same line: for any
             <i>k</i> &gt; 0, (<i>k</i><b>w</b>)&middot;<b>x</b> + <i>kb</i> =
             0 holds at exactly the same points as <b>w</b>&middot;<b>x</b> +
             <i>b</i> = 0. Slide ‖<b>w</b>‖: <b>w</b> and <i>b</i> change, the
-            line does not.</p>
+            line does not. Steps 4 and 5 use ‖<b>w</b>‖ = 1; step 6 undoes
+            it.</p>
           <label class="slider"><span>‖<b>w</b>‖</span>
             <input type="range" id="g-norm" min="-0.6" max="0.48"
               step="0.005">
@@ -239,18 +240,22 @@
             by ‖<b>w</b>‖</button></div>
         </div>
         <div class="step" data-step="4">
-          <h2>4. The point <b>x</b> = &minus;<i>b</i><b>w</b> is on the line
-            <b>w</b>&middot;<b>x</b> + <i>b</i> = 0</h2>
+          <h2>4. The line <b>w</b>&middot;<b>x</b> + <i>b</i> = 0 passes
+            through &minus;<i>b</i><b>w</b></h2>
           <p>With ‖<b>w</b>‖ = 1,</p>
           <div class="formula"><b>w</b>&middot;(&minus;<i>b</i><b>w</b>) +
             <i>b</i> = &minus;<i>b</i>‖<b>w</b>‖<sup>2</sup> + <i>b</i> =
             0</div>
           <p>so <b>x</b> = &minus;<i>b</i><b>w</b> is on the line, where the <b>w</b> axis
             meets it at a right angle (step 2). It is the line's closest
-            point to the origin, at distance |<i>b</i>|.</p>
+            point to the origin, at distance |<i>b</i>|. Lesson 15's ICA 1
+            line (<b>w</b> = [.6, .8], <i>b</i> = &minus;2) gives
+            <b>x</b> = (1.2, 1.6), at distance 2: the point Lagrange
+            found.</p>
         </div>
         <div class="step" data-step="5">
-          <h2>5. The margin of a point on the <b>w</b> axis</h2>
+          <h2>5. The margin of <b>x</b> = <i>c</i><b>w</b> is <i>c</i> +
+            <i>b</i></h2>
           <p>The point <b>x</b> = <i>c</i><b>w</b> lies on the <b>w</b>
             axis, which crosses the line at &minus;<i>b</i><b>w</b> at a right
             angle. So its distance to the line is</p>
@@ -261,7 +266,8 @@
             on the side <b>w</b> points to. Drag <i>c</i><b>w</b>.</p>
         </div>
         <div class="step" data-step="6">
-          <h2>6. The margin of any point</h2>
+          <h2>6. The margin of any <b>x</b> is (<b>w</b>&middot;<b>x</b> +
+            <i>b</i>) / ‖<b>w</b>‖</h2>
           <p>Project <b>x</b> onto the <b>w</b> axis: the foot is
             <i>c</i><b>w</b> with</p>
           <div class="formula"><i>c</i> = <span
@@ -279,8 +285,9 @@
             class="frac"><span><b>w</b>&middot;<b>x</b> +
             <i>b</i></span><span>‖<b>w</b>‖</span></span></div>
         </div>
-        <label class="check" data-step="4 5 6"><input type="checkbox"
-          id="g-free"><span>Let ‖<b>w</b>‖ vary</span></label>
+        <label class="check" data-step="6"><input type="checkbox"
+          id="g-free"><span>Undo ‖<b>w</b>‖ = 1 (let ‖<b>w</b>‖
+          vary)</span></label>
       </div>
       <div class="card readout" id="g-read"></div>
     </div>

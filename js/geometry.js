@@ -1,10 +1,11 @@
 // Margin geometry tab: six steps from the line w·x + b = 0 to the margin
 // of any point, (w·x + b) / ‖w‖, following the lesson 16 panels. From
-// step 4 on, w has unit length unless "let ‖w‖ vary" is checked.
+// step 4 on, w has unit length; step 6's "undo ‖w‖ = 1" frees it.
 
 const geo = {
-  step: 1, w: [1.2, 1.6], b: -3, ta: -0.4, tb: -2.6, c: 2.6,
-  x: [2.2, 1.8], free: false, drag: null,
+  // lesson 15's ICA 1 line 3x0 + 4x1 = 10 at unit length, as on the slides
+  step: 1, w: [0.6, 0.8], b: -2, ta: 1.5, tb: -2, c: 3.5,
+  x: [3.5, 1], free: false, drag: null,
 };
 const gSvg = planeSvg("g-stage");
 
@@ -21,7 +22,7 @@ function gOnLine(t) {
   }
   return add(F, mul(d, t));
 }
-function gUnit() { return geo.step >= 4 && !geo.free; }
+function gUnit() { return geo.step >= 4 && !(geo.step === 6 && geo.free); }
 
 /** Rescale w and b together (the line stays) so that ‖w‖ = r. */
 function gScale(r) {
@@ -255,7 +256,7 @@ dragOn(gSvg, {
       if (r < 0.15) return;
       if (geo.step <= 2) {
         geo.w = q;
-      } else if (geo.step >= 4 && geo.free) {
+      } else if (!gUnit() && geo.step >= 4) {
         // b follows so the line keeps its distance from the origin.
         const dist = geo.b / n;
         geo.w = q;

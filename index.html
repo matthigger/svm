@@ -36,6 +36,8 @@
       <div class="formula">
         margin(<b>x</b>) = <span class="frac"><span><b>w</b>&middot;<b>x</b>
         + <i>b</i></span><span>‖<b>w</b>‖</span></span>
+        <span class="implies">&rArr;</span>
+        with ‖<b>w</b>‖ = 1: &nbsp;<b>w</b>&middot;<b>x</b> + <i>b</i>
       </div>
       <p class="muted">Labels are now <i>y</i> &isin; {&minus;1, +1} and
         <i>&ycirc;</i> = sign(<b>w</b>&middot;<b>x</b> + <i>b</i>). A
@@ -103,9 +105,8 @@
             <i>b</i> doubles too: (2<b>w</b>)&middot;<b>x</b> + <i>b</i> = 0
             is the line <b>w</b>&middot;<b>x</b> + <i>b</i>/2 = 0, half as far
             from the origin. Scaling <b>w</b> and <i>b</i> together leaves
-            the line alone (step 3), and every margin too: the factor
-            cancels in (<b>w</b>&middot;<b>x</b> + <i>b</i>) /
-            ‖<b>w</b>‖.</details>
+            the line alone, which is why step 3 may assume ‖<b>w</b>‖ =
+            1.</details>
         </li>
         <li>In step 2, point <b>w</b> straight up, at [0, 1]. Which line
           is it?
@@ -220,60 +221,66 @@
             <b>w</b>.</p>
         </div>
         <div class="step" data-step="3">
-          <h2>3. Scaling <b>w</b> and <i>b</i> together keeps the line</h2>
-          <p>For any <i>k</i> &gt; 0, (<i>k</i><b>w</b>)&middot;<b>x</b> +
-            <i>kb</i> = 0 holds at exactly the same points as
-            <b>w</b>&middot;<b>x</b> + <i>b</i> = 0. So a line fixes
-            <b>w</b> and <i>b</i> only up to scale, and a distance to the
-            line can't depend on the scale. Slide ‖<b>w</b>‖: <b>w</b> and
-            <i>b</i> change, the line does not. The grey arrow
-            <b>w</b>/‖<b>w</b>‖ stays put on the dashed unit circle.</p>
+          <h2>3. Assume ‖<b>w</b>‖ = 1</h2>
+          <p>Without loss of generality, let's scale <b>w</b> so that
+            ‖<b>w</b>‖ = 1 (the dashed unit circle). <i>b</i> has to scale
+            with it so the equation still describes the same line: for any
+            <i>k</i> &gt; 0, (<i>k</i><b>w</b>)&middot;<b>x</b> + <i>kb</i> =
+            0 holds at exactly the same points as <b>w</b>&middot;<b>x</b> +
+            <i>b</i> = 0. Slide ‖<b>w</b>‖: <b>w</b> and <i>b</i> change, the
+            line does not.</p>
           <label class="slider"><span>‖<b>w</b>‖</span>
             <input type="range" id="g-norm" min="-0.6" max="0.48"
               step="0.005">
             <span id="g-normval" class="val"></span></label>
           <div class="slider"><span><i>b</i></span>
             <span id="g-bval" class="val"></span></div>
+          <div class="buttons"><button id="g-one">Divide <b>w</b>, <i>b</i>
+            by ‖<b>w</b>‖</button></div>
         </div>
         <div class="step" data-step="4">
-          <h2>4. The line's closest point to the origin</h2>
-          <p>The point <b>x</b> = (&minus;<i>b</i> / ‖<b>w</b>‖²)
-            <b>w</b> is on the line:</p>
-          <div class="formula"><b>w</b>&middot;(&minus;<i>b</i><b>w</b> /
-            ‖<b>w</b>‖²) + <i>b</i> = &minus;<i>b</i> + <i>b</i> = 0</div>
-          <p>It lies on the <b>w</b> axis, which meets the line at a right
-            angle (step 2), so it is the line's closest point to the
-            origin, at distance |<i>b</i>| / ‖<b>w</b>‖. Lesson 15's ICA 1
-            found the same point with Lagrange multipliers.</p>
+          <h2>4. The point <b>x</b> = &minus;<i>b</i><b>w</b> is on the line
+            <b>w</b>&middot;<b>x</b> + <i>b</i> = 0</h2>
+          <p>With ‖<b>w</b>‖ = 1,</p>
+          <div class="formula"><b>w</b>&middot;(&minus;<i>b</i><b>w</b>) +
+            <i>b</i> = &minus;<i>b</i>‖<b>w</b>‖<sup>2</sup> + <i>b</i> =
+            0</div>
+          <p>so <b>x</b> = &minus;<i>b</i><b>w</b> is on the line, where the <b>w</b> axis
+            meets it at a right angle (step 2). It is the line's closest
+            point to the origin, at distance |<i>b</i>|.</p>
         </div>
         <div class="step" data-step="5">
           <h2>5. The margin of a point on the <b>w</b> axis</h2>
-          <p>Let <b>u</b> = <b>w</b>/‖<b>w</b>‖, the unit vector along
-            <b>w</b>. The point <b>x</b> = <i>c</i><b>u</b> lies on the
-            <b>w</b> axis, which crosses the line at a right angle at
-            &minus;(<i>b</i>/‖<b>w</b>‖)<b>u</b> (step 4). So its distance
-            to the line is</p>
-          <div class="formula">‖<i>c</i><b>u</b> +
-            (<i>b</i>/‖<b>w</b>‖)<b>u</b>‖ = |<i>c</i> +
-            <i>b</i>/‖<b>w</b>‖|</div>
-          <p>Keep the sign: the margin <i>c</i> + <i>b</i>/‖<b>w</b>‖ is
-            positive on the side <b>w</b> points to. Drag
-            <i>c</i><b>u</b>.</p>
+          <p>The point <b>x</b> = <i>c</i><b>w</b> lies on the <b>w</b>
+            axis, which crosses the line at &minus;<i>b</i><b>w</b> at a right
+            angle. So its distance to the line is</p>
+          <div class="formula">‖<i>c</i><b>w</b> + <i>b</i><b>w</b>‖
+            = |<i>c</i> + <i>b</i>| ‖<b>w</b>‖ = |<i>c</i> +
+            <i>b</i>|</div>
+          <p>Keep the sign: the margin <i>c</i> + <i>b</i> is positive
+            on the side <b>w</b> points to. Drag <i>c</i><b>w</b>.</p>
         </div>
         <div class="step" data-step="6">
           <h2>6. The margin of any point</h2>
           <p>Project <b>x</b> onto the <b>w</b> axis: the foot is
-            <i>c</i><b>u</b> with</p>
-          <div class="formula"><i>c</i> = <b>u</b>&middot;<b>x</b> =
-            <span class="frac"><span><b>w</b>&middot;<b>x</b></span><span>‖<b>w</b>‖</span></span>
+            <i>c</i><b>w</b> with</p>
+          <div class="formula"><i>c</i> = <span
+            class="frac"><span><b>w</b>&middot;<b>x</b></span><span><b>w</b>&middot;<b>w</b></span></span>
+            = <b>w</b>&middot;<b>x</b>
             <span class="implies">&rArr;</span>
-            margin = <span class="frac"><span><b>w</b>&middot;<b>x</b>
-            + <i>b</i></span><span>‖<b>w</b>‖</span></span></div>
+            margin = <b>w</b>&middot;<b>x</b> + <i>b</i></div>
           <p>Sliding <b>x</b> parallel to the line keeps its distance, so
-            <b>x</b> and <i>c</i><b>u</b> have the same margin, step 5's
-            <i>c</i> + <i>b</i>/‖<b>w</b>‖. The two green segments
-            match.</p>
+            <b>x</b> and <i>c</i><b>w</b> have the same margin, step 5's
+            <i>c</i> + <i>b</i>. The two green segments match.</p>
+          <p><b>Undo the assumption.</b> For a <b>w</b> of any length,
+            divide <b>w</b> and <i>b</i> by ‖<b>w</b>‖ first (step 3: the
+            line stays put). The margin is then</p>
+          <div class="formula">margin(<b>x</b>) = <span
+            class="frac"><span><b>w</b>&middot;<b>x</b> +
+            <i>b</i></span><span>‖<b>w</b>‖</span></span></div>
         </div>
+        <label class="check" data-step="4 5 6"><input type="checkbox"
+          id="g-free"><span>Let ‖<b>w</b>‖ vary</span></label>
       </div>
       <div class="card readout" id="g-read"></div>
     </div>

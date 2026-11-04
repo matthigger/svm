@@ -9,11 +9,11 @@ multipliers αᵢ. Three tabs:
 
 - **Margin geometry.** Six steps from the line w·x + b = 0 to the margin
   of any point: the slope −w₀/w₁; w orthogonal to the line; rescaling w
-  and b together leaves the line alone (w is never normalized); the
-  closest point to the origin, −bw/‖w‖², at distance |b|/‖w‖; a point cu
-  on the w axis (u = w/‖w‖) has margin c + b/‖w‖; projecting any x onto
-  the w axis gives (w·x + b)/‖w‖. Drag w's tip, the line and the points;
-  the readout shows the arithmetic live.
+  and b together leaves the line alone, so take ‖w‖ = 1; −bw lies on the
+  line; a point cw has margin c + b; projecting any x onto the w axis
+  gives w·x + b, and undoing ‖w‖ = 1 gives (w·x + b)/‖w‖ for any w. Drag
+  w's tip, the line and the points; the readout shows the arithmetic
+  live.
 - **Hard margin.** The widest line: its street, and a table of the
   support vectors with their αᵢ and terms of w = Σ αᵢyᵢxᵢ. Drag a
   non-support sample and nothing moves.

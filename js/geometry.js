@@ -1,10 +1,10 @@
 // Margin geometry tab: six steps from the line w·x + b = 0 to the margin
-// of any point, (w·x + b) / ‖w‖, following the lesson 16 panels. From
-// step 4 on, w has unit length unless "let ‖w‖ vary" is checked.
+// of any point, (w·x + b) / ‖w‖, following the lesson 16 panels. w keeps
+// whatever length it has; steps 5 and 6 work with u = w / ‖w‖.
 
 const geo = {
-  step: 1, w: [1.2, 1.6], b: -3, ta: -0.4, tb: -2.6, t: 2.6,
-  x: [2.2, 1.8], free: false, drag: null,
+  step: 1, w: [1.2, 1.6], b: -3, ta: -0.4, tb: -2.6, c: 2.6,
+  x: [2.2, 1.8], drag: null,
 };
 const gSvg = planeSvg("g-stage");
 
@@ -21,7 +21,6 @@ function gOnLine(t) {
   }
   return add(F, mul(d, t));
 }
-function gUnit() { return geo.step >= 4 && !geo.free; }
 
 /** Rescale w and b together (the line stays) so that ‖w‖ = r. */
 function gScale(r) {
@@ -109,26 +108,30 @@ function geoRender() {
     s += arrowSvg([0, 0], u, "unitw");
     top += gLabel(u, `${W_T} / ‖${W_T}‖`, "muted", 8, 18);
   }
+  if (st >= 5) {
+    s += arrowSvg([0, 0], u, "unitw");
+    top += gLabel(u, '<tspan class="vec">u</tspan>', "muted", 8, 18);
+  }
   if (st >= 4) {
     // F = -b w / ‖w‖²: the mark's leg points back toward the origin
     s += rightAngleSvg(F, mul(u, b ? Math.sign(b) : -1), d);
     s += segSvg([0, 0], F, 'class="dist"');
     top += `<circle class="mark" cx="${S.sx(F[0])}" cy="${S.sy(F[1])}"
       r="6"/>`;
-    top += gLabel(F, gUnit() ? `${st === 4 ? '<tspan class="vec">x' +
-      "</tspan> = " : ""}−<tspan class="sym">b</tspan>${W_T}` :
-      `(−<tspan class="sym">b</tspan> / ‖${W_T}‖²) ${W_T}`, "ink", -12, 4,
+    top += gLabel(F, `${st === 4 ? '<tspan class="vec">x</tspan> = ' :
+      ""}(−<tspan class="sym">b</tspan> / ‖${W_T}‖²) ${W_T}`, "ink", -12, 4,
       "end");
   }
   if (st === 5) {
-    const A = mul(w, geo.t);
+    const A = mul(u, geo.c);
     s += segSvg(F, A, 'class="marg"');
-    top += `<circle class="pt" data-h="t" cx="${S.sx(A[0])}"
+    top += `<circle class="pt" data-h="c" cx="${S.sx(A[0])}"
       cy="${S.sy(A[1])}" r="8"/>`;
-    top += gLabel(A, `<tspan class="sym">t</tspan>${W_T}`, "ink", 12, 5);
+    top += gLabel(A, '<tspan class="sym">c</tspan><tspan class="vec">u' +
+      "</tspan>", "ink", 12, 5);
   }
   if (st === 6) {
-    const x = geo.x, c = dot(x, w) / dot(w, w), P = mul(w, c);
+    const x = geo.x, c = dot(x, u), P = mul(u, c);
     const L = sub(x, mul(w, (dot(w, x) + b) / dot(w, w)));
     s += segSvg(x, P, 'class="proj"');
     s += rightAngleSvg(P, mul(u, -Math.sign(c || 1)), mul(d,
@@ -137,7 +140,8 @@ function geoRender() {
     s += segSvg(x, L, 'class="marg dash"');
     top += `<circle class="mark" cx="${S.sx(P[0])}" cy="${S.sy(P[1])}"
       r="6"/>`;
-    top += gLabel(P, `<tspan class="sym">c</tspan>${W_T}`, "ink", 10, 18);
+    top += gLabel(P, '<tspan class="sym">c</tspan><tspan class="vec">u' +
+      "</tspan>", "ink", 10, 18);
     top += `<circle class="pt" data-h="x" cx="${S.sx(x[0])}"
       cy="${S.sy(x[1])}" r="9"/>`;
     top += gLabel(x, '<tspan class="vec">x</tspan>', "ink", 12, -10);
@@ -180,40 +184,27 @@ function geoReadout() {
     row("<i>b</i>", fmt(geo.b));
     row("‖<b>w</b>‖", fmt(n));
     row("line", `${linStr(w, geo.b, "<i>x</i>")} = 0`);
-    row("÷ ‖<b>w</b>‖", `${linStr(mul(w, 1 / n), geo.b / n, "<i>x</i>")}
-      = 0`);
   } else {
     const F = footOrigin(w, b);
     row("<i>b</i>", fmt(b));
-    if (!gUnit()) row("‖<b>w</b>‖", fmt(n));
+    row("‖<b>w</b>‖", fmt(n));
     if (st === 4) {
-      row(gUnit() ? `&minus;<i>b</i>${W}` : `(&minus;<i>b</i>/‖${W}‖²) ${W}`,
-        fvec(F));
-      row(`${W}·(&minus;<i>b</i>${W}) + <i>b</i>`, gUnit()
-        ? `&minus;<i>b</i> ‖${W}‖² + <i>b</i> = ${fmt(dot(w, F) + b)}`
-        : `&minus;<i>b</i> ‖${W}‖² + <i>b</i> = ${
-          fmt(-b * n * n + b)}`);
+      row(`(&minus;<i>b</i>/‖${W}‖²) ${W}`, fvec(F));
+      row(`${W}·(&minus;<i>b</i>${W}/‖${W}‖²) + <i>b</i>`,
+        `&minus;<i>b</i> + <i>b</i> = ${fmt(dot(w, F) + b)}`);
       row("distance to origin", `|<i>b</i>| / ‖${W}‖ = ${fmt(Math.abs(b) /
         n)}`);
     } else if (st === 5) {
-      const t = geo.t;
-      row("<i>t</i>", fmt(t));
-      row(`‖<i>t</i>${W} + <i>b</i>${W}‖`, gUnit()
-        ? `|<i>t</i> + <i>b</i>| = ${fmt(Math.abs(t + b))}`
-        : `|<i>t</i>‖${W}‖ + <i>b</i>/‖${W}‖| = ${
-          fmt(Math.abs(t * n + b / n))}`);
-      row("signed margin", gUnit()
-        ? `<i>t</i> + <i>b</i> = ${fmt(t + b)}`
-        : fmt(t * n + b / n));
+      const c = geo.c;
+      row("<i>c</i>", fmt(c));
+      row(`<i>b</i> / ‖${W}‖`, fmt(b / n));
+      row("signed margin", `<i>c</i> + <i>b</i>/‖${W}‖ = ${fmt(c + b / n)}`);
     } else {
-      const x = geo.x, c = dot(x, w) / dot(w, w);
+      const x = geo.x, c = dot(x, w) / n;
       row(X, fvec(x));
-      row(`<i>c</i> = ${W}·${X} / ${W}·${W}`, gUnit()
-        ? `${W}·${X} = ${fmt(c)}` : fmt(c));
-      row("margin", gUnit()
-        ? `${W}·${X} + <i>b</i> = ${fmt(dot(x, w) + b)}`
-        : `(${W}·${X} + <i>b</i>) / ‖${W}‖ = ${
-          fmt((dot(x, w) + b) / n)}`);
+      row(`<i>c</i> = ${W}·${X} / ‖${W}‖`, fmt(c));
+      row("margin", `(${W}·${X} + <i>b</i>) / ‖${W}‖ = ${
+        fmt((dot(x, w) + b) / n)}`);
       row("side", dot(x, w) + b >= 0 ? "positive (+1)" : "negative (−1)");
     }
   }
@@ -223,7 +214,6 @@ function geoReadout() {
 
 function geoSetStep(k) {
   geo.step = k;
-  if (gUnit()) gScale(1);
   for (const el of document.querySelectorAll("[data-step]")) {
     el.hidden = !el.dataset.step.split(" ").includes(String(k));
   }
@@ -255,7 +245,7 @@ dragOn(gSvg, {
       if (r < 0.15) return;
       if (geo.step <= 2) {
         geo.w = q;
-      } else if (geo.step >= 4 && geo.free) {
+      } else if (geo.step >= 4) {
         // b follows so the line keeps its distance from the origin.
         const dist = geo.b / n;
         geo.w = q;
@@ -272,8 +262,8 @@ dragOn(gSvg, {
       const F = footOrigin(geo.w, geo.b);
       const t = dot(sub(gOnLine(dot(sub(q, F), perp(u))), F), perp(u));
       if (h === "xa") geo.ta = t; else geo.tb = t;
-    } else if (h === "t") {
-      geo.t = dot(q, geo.w) / (n * n);
+    } else if (h === "c") {
+      geo.c = dot(q, u);
     } else if (h === "x") {
       geo.x = q;
     }
@@ -291,17 +281,6 @@ document.getElementById("g-prev").onclick = () => geoSetStep(geo.step - 1);
 document.getElementById("g-next").onclick = () => geoSetStep(geo.step + 1);
 document.getElementById("g-norm").oninput = e => {
   gScale(10 ** Number(e.target.value));
-  geoSyncScale();
-  geoRender();
-};
-document.getElementById("g-one").onclick = () => {
-  gScale(1);
-  geoSyncScale();
-  geoRender();
-};
-document.getElementById("g-free").onchange = e => {
-  geo.free = e.target.checked;
-  if (gUnit()) gScale(1);
   geoSyncScale();
   geoRender();
 };

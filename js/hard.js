@@ -136,7 +136,7 @@ document.getElementById("h-reset").onclick = () => {
   hardSolve();
   hardRender();
 };
-/** Load fixed samples (lesson 16's worked example and ICA 4). */
+/** Load fixed samples (day16's worked example and ICA 4). */
 function hardFixed(X, y) {
   hard.X = X.map(x => x.slice());
   hard.y = y.slice();

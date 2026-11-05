@@ -44,7 +44,7 @@ function softSweep() {
  */
 function caseOf(xi) { return xi <= 1e-6 ? 0 : xi <= 1 ? 1 : 2; }
 
-/** Lesson 16's (and the quiz's) four cases: out, on, in, wrong. */
+/** day16's (and the quiz's) four cases: out, on, in, wrong. */
 const CASES = ["out", "on", "in", "wrong"];
 function case4(i) {
   const fit = soft.fit, xi = fit.xi[i];

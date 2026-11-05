@@ -64,14 +64,13 @@
         <i>y<sub>i</sub></i>(<b>w</b>&middot;<b>x</b><sub><i>i</i></sub>
         + <i>b</i>) = 1, are the <b>support vectors</b>. The SVM also
         solves the problem with only their constraints, as equalities, so
-        lesson 15's Lagrange multipliers (written <i>α<sub>i</sub></i> for
+        Lagrange multipliers (day15; written <i>α<sub>i</sub></i> for
         the SVM) give <b>w</b> =
         &sum; <i>α<sub>i</sub>y<sub>i</sub></i><b>x</b><sub><i>i</i></sub>
         and &sum; <i>α<sub>i</sub>y<sub>i</sub></i> = 0, summed over the
-        support vectors. Which samples those are comes from the KKT
-        conditions (the right choice has every <i>α<sub>i</sub></i> &ge;
-        0), which lesson 16 states without proof. The demo finds the
-        <i>α<sub>i</sub></i> numerically.</p>
+        support vectors. Which samples those are, stated without proof:
+        the right choice has every <i>α<sub>i</sub></i> &ge; 0. The demo
+        finds the <i>α<sub>i</sub></i> numerically.</p>
     </div>
 
     <div data-show="soft">
@@ -92,8 +91,8 @@
         class's margin line; its length is
         <i>ξ<sub>i</sub></i>/‖<b>w</b>‖. The multipliers are now capped,
         0 &le; <i>α<sub>i</sub></i> &le; <i>C</i>, and every sample with
-        slack has <i>α<sub>i</sub></i> = <i>C</i> (the KKT conditions
-        again, stated without proof).</p>
+        slack has <i>α<sub>i</sub></i> = <i>C</i> (also stated without
+        proof).</p>
     </div>
 
     <div>
@@ -215,8 +214,8 @@
             <b>x</b><sub>B</sub>)&middot;<b>w</b> = &minus;<i>b</i> + <i>b</i>
             = 0</div>
           <p><b>w</b> is orthogonal to every vector along the line (the faint
-            copy of <b>w</b>). This is lesson 15's &ldquo;&nabla;<i>g</i> is
-            orthogonal to its level set&rdquo;, with <i>g</i>(<b>x</b>) =
+            copy of <b>w</b>). This is &ldquo;&nabla;<i>g</i> is orthogonal
+            to its level set&rdquo; from Lagrange multipliers (day15), with <i>g</i>(<b>x</b>) =
             <b>w</b>&middot;<b>x</b> + <i>b</i> and &nabla;<i>g</i> =
             <b>w</b>.</p>
         </div>
@@ -248,8 +247,8 @@
             0</div>
           <p>so <b>x</b> = &minus;<i>b</i><b>w</b> is on the line, where the <b>w</b> axis
             meets it at a right angle (step 2). It is the line's closest
-            point to the origin, at distance |<i>b</i>|. Lesson 15's ICA 1
-            line (<b>w</b> = [.6, .8], <i>b</i> = &minus;2) gives
+            point to the origin, at distance |<i>b</i>|. The ICA 1 line from
+            Lagrange multipliers (day15) (<b>w</b> = [.6, .8], <i>b</i> = &minus;2) gives
             <b>x</b> = (1.2, 1.6), at distance 2: the point Lagrange
             found.</p>
         </div>

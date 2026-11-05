@@ -1,9 +1,10 @@
 // Margin geometry tab: six steps from the line w·x + b = 0 to the margin
-// of any point, (w·x + b) / ‖w‖, following the lesson 16 panels. From
+// of any point, (w·x + b) / ‖w‖, following the day16 slides. From
 // step 4 on, w has unit length; step 6's "undo ‖w‖ = 1" frees it.
 
 const geo = {
-  // lesson 15's ICA 1 line 3x0 + 4x1 = 10 at unit length, as on the slides
+  // ICA 1's line from Lagrange multipliers (day15), 3x0 + 4x1 = 10, at
+  // unit length, as on the slides
   step: 1, w: [0.6, 0.8], b: -2, ta: 1.5, tb: -2, c: 3.5,
   x: [3.5, 1], free: false, drag: null,
 };
